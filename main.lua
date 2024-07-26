@@ -776,8 +776,101 @@ local function match_cards(cards)
     return matched
 end
 
-local function build_oracle_text(card)
-    print()
+local function build_oracle_text(card, pos)
+  local cost = ""
+	local typeline = ""
+	local pt = ""
+  local loyalty = ""
+  local text = ""
+  local ft = ""
+
+  -- Generate Cost
+
+    if card.Cost and card.Cost[pos] and #card.Cost[pos] > 0 then
+      cost = card.Cost[pos]
+    end
+
+  -- Generate Typeline
+
+	if card["Supertype(s)"][pos] and #card["Supertype(s)"][pos] > 0 then
+		local parts = 0
+		for type in card["Supertype(s)"][pos]:gmatch("([^;]+)") do
+			typeline = typeline .. (parts >= 1 and " " or "") .. type
+			parts = parts + 1
+		end		
+	end
+
+	if card["Card Type(s)"][pos] and #card["Card Type(s)"][pos] > 0 then
+		if #typeline > 0 then
+			typeline = typeline .. " "
+		end
+
+		local parts = 0
+		for type in card["Card Type(s)"][pos]:gmatch("([^;]+)") do
+			typeline = typeline .. (parts >= 1 and " " or "") .. type
+			parts = parts + 1
+		end
+	end
+
+	if card["Subtype(s)"][pos] and #card["Subtype(s)"][pos] > 0 then
+		if #typeline > 0 then
+			typeline = typeline .. " - "
+		end
+
+		local parts = 0
+		for type in card["Subtype(s)"][pos]:gmatch("([^;]+)") do
+			typeline = typeline .. (parts >= 1 and " " or "") .. type
+			parts = parts + 1
+		end
+	end
+
+	-- Generate P/T
+
+	if card.power[pos] and #card.power[pos] > 0 then
+		pt = card.power[pos] .. "/"
+	end
+
+	if card.toughness[pos] and #card.toughness[pos] > 0 then
+		if #pt > 0 then
+			pt = pt .. card.toughness[pos]
+		else
+			pt = "?/" .. card.toughness[pos]
+		end
+	else
+		if #pt > 0 then
+			pt = pt .. "/?"
+		end
+	end
+
+  -- Generate Loyalty
+
+  if card.Loyalty and card.Loyalty[pos] and #card.Loyalty[pos] > 0 then
+    loyalty = card.Loyalty[pos]
+  end
+
+  -- Generate Text
+
+  if card["Text Box"] and card["Text Box"][pos] and #card["Text Box"][pos] > 0 then
+    text = card["Text Box"][pos]
+  end
+
+  -- Generate FT
+
+  if card["Flavor Text"] and card["Flavor Text"][pos] and #card["Flavor Text"][pos] > 0 then
+    ft = string.format("---\n%s\n---", card["Flavor Text"][pos])
+  end
+
+  local segments = {cost, typeline, text, pt, loyalty, ft}
+  local nonEmptySegments = {}
+
+  for index, value in ipairs(segments) do
+    if #value > 0 then
+      table.insert(nonEmptySegments, value)
+    end
+  end
+
+	return table.concat(nonEmptySegments, "\n")
+
 end
 
 local function build_card_objects(cards)
@@ -785,6 +878,8 @@ local function build_card_objects(cards)
 
     for index, card in ipairs(cards) do
         local cardObject = {
+            title = card.Name,
+            cmc = card.CMC,
             faces = {}
         }
 
@@ -799,14 +894,14 @@ local function build_card_objects(cards)
                 cardObject.faces[i] = {
                     imageURI = card.Image,
                     name = nameParts[i],
-                    oracleText = ""
+                    oracleText = build_oracle_text(card, i)
                 }
+                print(cardObject.faces[i].oracleText)
             end
         end
     end
 
 end
-
 
 local list = "\
 1 Smart Fella // Fart Smella\
