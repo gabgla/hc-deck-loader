@@ -44,7 +44,7 @@ if ENV == "dev" then
 			return onComplete()
 		end
 
-		local filename = "../tools/Hellscube-Database.json"
+		local filename = "./tools/Hellscube-Database.json"
 		local f = assert(io.open(filename, "r"))
 		local t = f:read("*all")
 		f:close()
@@ -678,6 +678,249 @@ end
 
 -------------------------------------------------------------------------------
 
+-- Implements a radix tree - https://github.com/markert/lua-radixtree
+
+-------------------------------------------------------------------------------
+
+local function new_radix_tree()
+	local pairs = pairs
+	local next = next
+	local tinsert = table.insert
+	local tremove = table.remove
+
+	local new = function()
+		local j = {}
+
+		-- the table that holds the radix_tree
+		j.radix_tree = {}
+
+		-- elments that can be filled by several functions
+		-- and be returned as set of possible hits
+		j.radix_elements = {}
+
+		-- internal tree instance or table of tree instances
+		-- used to hold parts of the tree that may be interesting afterwards
+		j.return_tree = {}
+
+		-- this FSM is used for string comparison
+		-- can evaluate if the radix tree contains or ends with a specific string
+		local lookup_fsm = function(wordpart, next_state, next_letter)
+			if wordpart:sub(next_state, next_state) ~= next_letter then
+				if wordpart:sub(1, 1) ~= next_letter then
+					return false, 0
+				else
+					return false, 1
+				end
+			end
+			if #wordpart == next_state then
+				return true, next_state
+			else
+				return false, next_state
+			end
+		end
+
+		-- evaluate if the radix tree starts with a specific string
+		-- returns pointer to subtree
+		local root_lookup
+		root_lookup = function(tree_instance, part)
+			if #part == 0 then
+				j.return_tree = tree_instance
+			else
+				local s = part:sub(1, 1)
+				if tree_instance and tree_instance[s] ~= true then
+					root_lookup(tree_instance[s], part:sub(2))
+				end
+			end
+		end
+
+		-- evaluate if the radix tree contains or ends with a specific string
+		-- returns list of pointers to subtrees
+		local leaf_lookup
+		leaf_lookup = function(tree_instance, word, state)
+			local next_state = state + 1
+			if tree_instance then
+				for k, v in pairs(tree_instance) do
+					if v ~= true then
+						local hit, next_state = lookup_fsm(word, next_state, k)
+						if hit == true then
+							tinsert(j.return_tree, v)
+						else
+							leaf_lookup(v, word, next_state)
+						end
+					end
+				end
+			end
+		end
+
+		-- takes a single tree or a list of trees
+		-- traverses the trees and adds all elements to j.radix_elements
+		local radix_traverse
+		radix_traverse = function(tree_instance)
+			for k, v in pairs(tree_instance) do
+				if v == true then
+					j.radix_elements[k] = true
+				elseif v ~= true then
+					radix_traverse(v)
+				end
+			end
+		end
+
+		-- adds a new element to the tree
+		local add_to_tree = function(word)
+			local t = j.radix_tree
+
+			-- for char in word:gfind(".") do
+			-- 	if word == "Smart Fella // Fart Smella" then
+			-- 		print(char)
+			-- 	end
+			-- 	if t[char] == true or t[char] == nil then
+			-- 		t[char] = {}
+			-- 	end
+			-- 	t = t[char]
+			-- end
+			-- t[word] = true
+
+			for i = 1, #word do
+				local char = word:sub(i,i)
+				if t[char] == true or t[char] == nil then
+					t[char] = {}
+				end
+				t = t[char]
+			end
+			t[word] = true
+		end
+
+		-- removes an element from the tree
+		local remove_from_tree = function(word)
+			local t = j.radix_tree
+
+			-- for char in word:gfind(".") do
+			-- 	if t[char] == true then
+			-- 		return
+			-- 	end
+			-- 	t = t[char]
+			-- end
+			-- t[word] = nil
+
+			for i = 1, #word do
+				local char = word:sub(i,i)
+				if t[char] == true then
+					return
+				end
+				t = t[char]
+			end
+			t[word] = nil
+		end
+
+		-- performs the respective actions for the parts of a fetcher
+		-- that can be handled by a radix tree
+		-- fills j.radix_elements with all hits that were found
+		local match_parts = function(tree_instance, parts)
+			j.radix_elements = {}
+			if parts['equals'] then
+				j.return_tree = {}
+				root_lookup(tree_instance, parts['equals'])
+				if j.return_tree[parts['equals']] == true then
+					j.radix_elements[parts['equals']] = true
+				end
+			else
+				local temp_tree = tree_instance
+				if parts['startsWith'] then
+					j.return_tree = {}
+					root_lookup(temp_tree, parts['startsWith'])
+					temp_tree = j.return_tree
+				end
+				if parts['contains'] then
+					j.return_tree = {}
+					leaf_lookup(temp_tree, parts['contains'], 0)
+					temp_tree = j.return_tree
+				end
+				if parts['endsWith'] then
+					j.return_tree = {}
+					leaf_lookup(temp_tree, parts['endsWith'], 0)
+					for k, t in pairs(j.return_tree) do
+						for _, v in pairs(t) do
+							if v ~= true then
+								j.return_tree[k] = nil
+								break
+							end
+						end
+					end
+					temp_tree = j.return_tree
+				end
+				if temp_tree then
+					radix_traverse(temp_tree)
+				end
+			end
+		end
+
+		-- evaluates if the fetch operation can be handled
+		-- completely or partially by the radix tree
+		-- returns elements from the j.radix_tree if it can be handled
+		-- and nil otherwise
+		local get_possible_matches = function(path, is_case_insensitive)
+			local level = 'impossible'
+			local radix_expressions = {}
+
+			if not is_case_insensitive then
+				for name, value in pairs(path) do
+					if name == 'equals' or name == 'startsWith' or name == 'endsWith' or name == 'contains' then
+						if radix_expressions[name] then
+							level = 'impossible'
+							break
+						end
+						radix_expressions[name] = value
+						if level == 'partial_pending' then
+							level = 'partial'
+						elseif level ~= 'partial' then
+							level = 'all'
+						end
+					else
+						if level == 'easy' or level == 'partial' then
+							level = 'partial'
+						else
+							level = 'partial_pending'
+						end
+					end
+				end
+				if level == 'partial_pending' then
+					level = 'impossible'
+				end
+			end
+
+			if level ~= 'impossible' then
+				match_parts(j.radix_tree, radix_expressions)
+				return j.radix_elements, level
+			else
+				return nil, level
+			end
+		end
+
+		j.add = function(word)
+			add_to_tree(word)
+		end
+		j.remove = function(word)
+			remove_from_tree(word)
+		end
+		j.get_possible_matches = get_possible_matches
+
+		-- for unit testing
+
+		j.match_parts = function(parts, xxx)
+			match_parts(j.radix_tree, parts, xxx)
+		end
+		j.found_elements = function()
+			return j.radix_elements
+		end
+
+		return j
+	end
+
+	return new()
+end
+
+-------------------------------------------------------------------------------
+
 local function load_index()
 	if INDEX then
 		return
@@ -846,7 +1089,7 @@ local function format_text_fields(card, pos)
 	if card.Loyalty and card.Loyalty[pos] and #card.Loyalty[pos] > 0 then
 		loyalty = card.Loyalty[pos]
 	end
-	
+
 	if #loyalty > 0 then
 		loyalty = "[b]" .. loyalty .. "[/b]"
 	end
@@ -977,13 +1220,37 @@ local function build_card_objects(cards)
 	return cardObjects
 end
 
+------------------
+--- DEV
+------------------
+
 if ENV == "dev" then
 	local list = "" -- Add cards here
 
+	print("Parsing list")
 	local cards = parse_card_list(list)
+	print("Loading DB")
 
 	load_database(function()
+
+		print("Creating index")
 		load_index()
+
+		print("Creating tree")
+		local radixTree = new_radix_tree()
+		for _, value in pairs(DATABASE.data) do
+			radixTree.add(value.Name)
+		end
+
+		local m = radixTree.get_possible_matches({startsWith  = "", contains = "M"}, false)
+
+		if m then
+			for path,_ in pairs(m) do
+			  print(path)
+			end
+		end
+
+		print("Building card data")
 
 		local matched = match_cards(cards)
 		local objects = build_card_objects(matched)
@@ -991,19 +1258,23 @@ if ENV == "dev" then
 end
 
 ------------------
----TTS
+--- TTS
 ------------------
 if ENV ~= "tts" then
 	return
 end
 
 ------ CARD SPAWNING
-local function jsonForCardFace(face, position, flipped)
+local function jsonForCardFace(face, position, flipped, count)
 	local rotation = self.getRotation()
 
 	local rotZ = rotation.z
 	if flipped then
 		rotZ = math.fmod(rotZ + 180, 360)
+	end
+
+	if not count or count <= 0 then
+		count = 1
 	end
 
 	local json = {
@@ -1043,7 +1314,7 @@ local function jsonForCardFace(face, position, flipped)
 	json.CustomDeck["24400"] = {
 		FaceURL = face.imageURI,
 		BackURL = getCardBack(),
-		NumWidth = 1,
+		NumWidth = count,
 		NumHeight = 1,
 		BackIsHidden = true,
 		UniqueBack = false,
@@ -1133,22 +1404,20 @@ local function spawnCard(faces, position, flipped, onFullySpawned)
 		flipped = true
 	end
 
-	local jsonFace1 = jsonForCardFace(faces[1], position, flipped)
+	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces)
 
 	if #faces > 1 then
 		jsonFace1.States = {}
 		for i = 2, (#(faces)) do
-			local jsonFaceI = jsonForCardFace(faces[i], position, flipped)
+			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces)
 
 			jsonFace1.States[tostring(i)] = jsonFaceI
 		end
 	end
 
-	local cardObj = spawnObjectJSON({ json = JSON.encode(jsonFace1) })
-
-	onFullySpawned(cardObj)
-
-	return cardObj
+	spawnObjectJSON({ json = JSON.encode(jsonFace1) }, function(cardObj)
+		onFullySpawned(cardObj)
+	end)
 end
 
 -- Spawns a deck named [name] containing the given [cards] at [position].
@@ -1199,7 +1468,7 @@ local function spawnDeck(cards, name, position, flipped, onFullySpawned, onError
 			onFullySpawned(deckObject)
 		end,
 		function() return (sem == 0) end,
-		5,
+		10,
 		function() onError("Error collating deck... timed out.") end
 	)
 end
