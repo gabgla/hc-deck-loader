@@ -116,6 +116,8 @@ if HTTP_CLIENT then
 			end
 	
 			DATABASE = data
+
+			printToAll("Database loaded")
 	
 			onComplete()
 		end)
@@ -1163,8 +1165,6 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 	local commanderPosition = self.positionToWorld(COMMANDER_POSITION_OFFSET)
 	local tokensPosition = self.positionToWorld(TOKENS_POSITION_OFFSET)
 
-	printInfo("Querying Scryfall for card data...")
-
 	local maindeck = {}
 	local sideboard = {}
 	local maybeboard = {}
@@ -1311,6 +1311,18 @@ function importDeck()
 	return 1
 end
 
+function preloadDB()
+	if lock then
+		log("DB already loading.")
+	end
+
+	load_database(function ()
+		
+	end)
+
+	return 1
+end
+
 local function drawUI()
 	local _inputs = self.getInputs()
 	local deckURL = ""
@@ -1324,23 +1336,23 @@ local function drawUI()
 	end
 	self.clearInputs()
 	self.clearButtons()
-	self.createInput({
-		input_function = "onLoadDeckInput",
-		function_owner = self,
-		label          = "Enter deck URL, or load from Notebook.",
-		alignment      = 2,
-		position       = { x = 0, y = 0.1, z = 0.78 },
-		width          = 2000,
-		height         = 100,
-		font_size      = 60,
-		validation     = 1,
-		value          = deckURL,
-	})
+	-- self.createInput({
+	-- 	input_function = "onLoadDeckInput",
+	-- 	function_owner = self,
+	-- 	label          = "Enter deck URL, or load from Notebook.",
+	-- 	alignment      = 2,
+	-- 	position       = { x = 0, y = 0.1, z = 0.78 },
+	-- 	width          = 2000,
+	-- 	height         = 100,
+	-- 	font_size      = 60,
+	-- 	validation     = 1,
+	-- 	value          = deckURL,
+	-- })
 
 	self.createButton({
-		click_function = "onLoadDeckURLButton",
+		click_function = "onPreloadDBButton",
 		function_owner = self,
-		label          = "Load Deck (URL)",
+		label          = "Preload DB",
 		position       = { -1, 0.1, 1.15 },
 		rotation       = { 0, 0, 0 },
 		width          = 850,
@@ -1348,7 +1360,7 @@ local function drawUI()
 		font_size      = 80,
 		color          = { 0.5, 0.5, 0.5 },
 		font_color     = { r = 1, b = 1, g = 1 },
-		tooltip        = "Click to load deck from URL",
+		tooltip        = "Click to load deck preload the database",
 	})
 
 	self.createButton({
@@ -1412,6 +1424,10 @@ function onLoadDeckNotebookButton(_, pc, _)
 	deckSource = DECK_SOURCE_NOTEBOOK
 
 	startLuaCoroutine(self, "importDeck")
+end
+
+function onPreloadDBButton(_, pc, _)
+	startLuaCoroutine(self,  "preloadDB")
 end
 
 function onToggleAdvancedButton(_, _, _)
