@@ -1329,65 +1329,7 @@ local function jsonForCardFace(face, position, flipped, count, index)
 	}
 
 	if enableTokenButtons and face.tokenData and face.tokenData[1] and face.tokenData[1].name and string.len(face.tokenData[1].name) > 0 then
-		json.LuaScript =
-		[[function onLoad(saved_data)
-                if saved_data ~= "" then
-                    tokens = JSON.decode(saved_data)
-                else
-                    tokens = {}
-                end
-
-                local pZ = -1.04
-                for i, token in ipairs(tokens) do
-                    self.createButton({label = token.name,
-                        tooltip = "Create " .. token.name .. "\n" .. token.oracleText,
-                        click_function = "gt" .. i,
-                        function_owner = self,
-                        width = math.max(400, 40 * string.len(token.name) + 40),
-                        height = 100,
-                        color = {1, 1, 1, 0.5},
-                        hover_color = {1, 1, 1, .7},
-                        font_color = {0, 0, 0, 2},
-                        position = {.5, 0.5, pZ},
-                        font_size = 75})
-                    pZ = pZ + 0.28
-                end
-            end
-
-            function onSave()
-                return JSON.encode(tokens)
-            end
-
-            function gt1() getToken(1) end
-            function gt2() getToken(2) end
-            function gt3() getToken(3) end
-            function gt4() getToken(4) end
-
-            function getToken(i)
-                token = tokens[i]
-                spawnObject({
-                    type = "Card",
-                    sound = false,
-                    rotation = self.getRotation(),
-                    position = self.positionToWorld({-2.2,0.1,0}),
-                    scale = self.getScale(),
-                    callback_function = (function(obj)
-                        obj.memo = ""
-                        obj.setName(token.name)
-                        obj.setDescription(token.oracleText)
-                        obj.setCustomObject({
-                            face = token.front,
-                            back = token.back
-                        })
-                        if (parent) then
-                          parent.call("CAddButtons",{obj, self})
-                        end
-                    end)
-                })
-            end
-        ]]
-
-		json.LuaScriptState = JSON.encode(face.tokenData)
+		printErr("Token buttons not implemented.")
 	end
 
 	return json
@@ -1422,8 +1364,8 @@ local function spawnCard(faces, position, flipped, onFullySpawned)
 		end
 	end
 
-	spawnObjectJSON({
-		json = JSON.encode(jsonFace1),
+	spawnObjectData({
+		data = jsonFace1,
 		callback_function = function(cardObj)
 			onFullySpawned(cardObj)
 		end
