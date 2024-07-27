@@ -1,5 +1,9 @@
 ENV = self and "tts" or "dev"
 
+if ENV == "tts" then
+	HTTP_CLIENT = true
+end
+
 if ENV == "dev" then
 	-- Implement TTS WebRequest
 	local req_timeout = 10
@@ -35,6 +39,35 @@ if ENV == "dev" then
 		callback(webReturn)
 	end
 
+		
+	function load_database(onComplete)
+		if DATABASE then
+			return onComplete()
+		end
+
+		local filename = "../tools/Hellscube-Database.json"
+		local f = assert(io.open(filename, "r"))
+		local t = f:read("*all")
+		f:close()
+
+		local success, data = pcall(function() return jsondecode(t) end)
+
+		if not success then
+			onError("failed to parse JSON response")
+			return
+		elseif not data then
+			onError("empty JSON response")
+			return
+		elseif data.object == "error" then
+			onError("failed to find card")
+			return
+		end
+
+		DATABASE = data
+
+		onComplete()
+	end
+
 	-- Mock implementations
 	function onError(msg)
 		io.stderr:write(msg, "\n")
@@ -51,6 +84,43 @@ if ENV == "dev" then
 	function log(msg)
 		print(msg)
 	end
+end
+
+if HTTP_CLIENT then
+	-- Performs actual request
+	function load_database(onComplete)
+		if DATABASE then
+			return onComplete()
+		end
+	
+		WebRequest.get(DATABASE_URL, function(webReturn)
+			if webReturn.is_error or webReturn.error then
+				onError("Web request error: " .. webReturn.error or "unknown")
+				return
+			elseif string.len(webReturn.text) == 0 then
+				onError("empty response")
+				return
+			end
+	
+			local success, data = pcall(function() return jsondecode(webReturn.text) end)
+	
+			if not success then
+				onError("failed to parse JSON response")
+				return
+			elseif not data then
+				onError("empty JSON response")
+				return
+			elseif data.object == "error" then
+				onError("failed to find card")
+				return
+			end
+	
+			DATABASE = data
+	
+			onComplete()
+		end)
+	end
+	
 end
 
 ------ CONSTANTS
@@ -608,39 +678,6 @@ end
 
 -------------------------------------------------------------------------------
 
-local function load_database(onComplete)
-	if DATABASE then
-		return
-	end
-
-	WebRequest.get(DATABASE_URL, function(webReturn)
-		if webReturn.is_error or webReturn.error then
-			onError("Web request error: " .. webReturn.error or "unknown")
-			return
-		elseif string.len(webReturn.text) == 0 then
-			onError("empty response")
-			return
-		end
-
-		local success, data = pcall(function() return jsondecode(webReturn.text) end)
-
-		if not success then
-			onError("failed to parse JSON response")
-			return
-		elseif not data then
-			onError("empty JSON response")
-			return
-		elseif data.object == "error" then
-			onError("failed to find card")
-			return
-		end
-
-		DATABASE = data
-
-		onComplete()
-	end)
-end
-
 local function load_index()
 	if INDEX then
 		return
@@ -808,7 +845,7 @@ local function build_oracle_text(card, pos)
 	-- Generate Text
 
 	if card["Text Box"] and card["Text Box"][pos] and #card["Text Box"][pos] > 0 then
-		text = card["Text Box"][pos]
+		text = card["Text Box"][pos]:gsub("\\n", "\n")
 	end
 
 	-- Generate FT
@@ -889,7 +926,6 @@ local function build_card_objects(cards)
 
 	return cardObjects
 end
-
 
 if ENV == "dev" then
 	local list = "" -- Add cards here

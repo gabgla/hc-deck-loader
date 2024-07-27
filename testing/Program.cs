@@ -1,6 +1,6 @@
 ﻿using MoonSharp.Interpreter;
 
-const string PATH = "../moonsharp_test.lua";
+const string PATH = "../main.lua";
 
 const string TEST_SCRIPT_1 = @"
     local s = ""Regardless of the century, plane, or species, developing artificers never fail to invent the ornithopter.""
