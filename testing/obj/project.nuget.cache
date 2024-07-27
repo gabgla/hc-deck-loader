@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "5Ely4iL7qg5OYcx8qMppcZWYUfbX0xVhXQHOKav/6Kphsz9qToROZ5euAWiYdpDX6d/+c6Spfa4pvb0ehln0fw==",
+  "success": true,
+  "projectFilePath": "/home/gabri/Repos/hellfall-importer/testing/testing.csproj",
+  "expectedPackageFiles": [
+    "/home/gabri/.nuget/packages/moonsharp/2.0.0/moonsharp.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

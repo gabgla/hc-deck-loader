@@ -1,0 +1,17 @@
+/home/gabri/Repos/hellfall-importer/testing/bin/Debug/net6.0/testing
+/home/gabri/Repos/hellfall-importer/testing/bin/Debug/net6.0/testing.deps.json
+/home/gabri/Repos/hellfall-importer/testing/bin/Debug/net6.0/testing.runtimeconfig.json
+/home/gabri/Repos/hellfall-importer/testing/bin/Debug/net6.0/testing.dll
+/home/gabri/Repos/hellfall-importer/testing/bin/Debug/net6.0/ref/testing.dll
+/home/gabri/Repos/hellfall-importer/testing/bin/Debug/net6.0/testing.pdb
+/home/gabri/Repos/hellfall-importer/testing/bin/Debug/net6.0/MoonSharp.Interpreter.dll
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.csproj.AssemblyReference.cache
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.GeneratedMSBuildEditorConfig.editorconfig
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.AssemblyInfoInputs.cache
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.AssemblyInfo.cs
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.csproj.CoreCompileInputs.cache
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.csproj.CopyComplete
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.dll
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/ref/testing.dll
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.pdb
+/home/gabri/Repos/hellfall-importer/testing/obj/Debug/net6.0/testing.genruntimeconfig.cache
