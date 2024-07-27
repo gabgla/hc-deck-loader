@@ -781,7 +781,7 @@ local function new_radix_tree()
 			-- t[word] = true
 
 			for i = 1, #word do
-				local char = word:sub(i,i)
+				local char = word:sub(i, i)
 				if t[char] == true or t[char] == nil then
 					t[char] = {}
 				end
@@ -803,7 +803,7 @@ local function new_radix_tree()
 			-- t[word] = nil
 
 			for i = 1, #word do
-				local char = word:sub(i,i)
+				local char = word:sub(i, i)
 				if t[char] == true then
 					return
 				end
@@ -1202,12 +1202,20 @@ local function build_card_objects(cards)
 			for i, type in ipairs(card["Card Type(s)"]) do
 				if type then
 					local textFields = format_text_fields(card, i)
+					local name
 
-					cardObject.faces[i] = {
-						imageURI = card.Image,
-						name = build_card_title(nameParts[i], card.CMC, textFields),
-						oracleText = build_oracle_text(textFields)
-					}
+					if i <= #nameParts then
+						name = nameParts[i]
+						cardObject.faces[i] = {
+
+							imageURI = card.Image,
+							name = build_card_title(name, card.CMC, textFields),
+							oracleText = build_oracle_text(textFields)
+						}
+					else
+						-- Skip missing names for now
+						name = card.Name
+					end
 				end
 			end
 		else
@@ -1232,7 +1240,6 @@ if ENV == "dev" then
 	print("Loading DB")
 
 	load_database(function()
-
 		print("Creating index")
 		load_index()
 
@@ -1242,11 +1249,11 @@ if ENV == "dev" then
 			radixTree.add(value.Name)
 		end
 
-		local m = radixTree.get_possible_matches({startsWith  = "", contains = "M"}, false)
+		local m = radixTree.get_possible_matches({ startsWith = "", contains = "M" }, false)
 
 		if m then
-			for path,_ in pairs(m) do
-			  print(path)
+			for path, _ in pairs(m) do
+				print(path)
 			end
 		end
 
@@ -1265,7 +1272,7 @@ if ENV ~= "tts" then
 end
 
 ------ CARD SPAWNING
-local function jsonForCardFace(face, position, flipped, count)
+local function jsonForCardFace(face, position, flipped, count, index)
 	local rotation = self.getRotation()
 
 	local rotZ = rotation.z
@@ -1304,7 +1311,7 @@ local function jsonForCardFace(face, position, flipped, count)
 		GridProjection = false,
 		HideWhenFaceDown = true,
 		Hands = true,
-		CardID = 2440000,
+		CardID = 2440000 + index,
 		SidewaysCard = false,
 		CustomDeck = {},
 		LuaScript = "",
@@ -1404,20 +1411,23 @@ local function spawnCard(faces, position, flipped, onFullySpawned)
 		flipped = true
 	end
 
-	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces)
+	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces, 0)
 
 	if #faces > 1 then
 		jsonFace1.States = {}
 		for i = 2, (#(faces)) do
-			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces)
+			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces, i - 1)
 
 			jsonFace1.States[tostring(i)] = jsonFaceI
 		end
 	end
 
-	spawnObjectJSON({ json = JSON.encode(jsonFace1) }, function(cardObj)
-		onFullySpawned(cardObj)
-	end)
+	spawnObjectJSON({
+		json = JSON.encode(jsonFace1),
+		callback_function = function(cardObj)
+			onFullySpawned(cardObj)
+		end
+	})
 end
 
 -- Spawns a deck named [name] containing the given [cards] at [position].
@@ -1468,7 +1478,7 @@ local function spawnDeck(cards, name, position, flipped, onFullySpawned, onError
 			onFullySpawned(deckObject)
 		end,
 		function() return (sem == 0) end,
-		10,
+		5,
 		function() onError("Error collating deck... timed out.") end
 	)
 end
