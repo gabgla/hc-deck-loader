@@ -39,7 +39,6 @@ if ENV == "dev" then
 		callback(webReturn)
 	end
 
-		
 	function load_database(onComplete)
 		if DATABASE then
 			return onComplete()
@@ -92,7 +91,7 @@ if HTTP_CLIENT then
 		if DATABASE then
 			return onComplete()
 		end
-	
+
 		WebRequest.get(DATABASE_URL, function(webReturn)
 			if webReturn.is_error or webReturn.error then
 				onError("Web request error: " .. webReturn.error or "unknown")
@@ -101,9 +100,9 @@ if HTTP_CLIENT then
 				onError("empty response")
 				return
 			end
-	
+
 			local success, data = pcall(function() return jsondecode(webReturn.text) end)
-	
+
 			if not success then
 				onError("failed to parse JSON response")
 				return
@@ -114,19 +113,18 @@ if HTTP_CLIENT then
 				onError("failed to find card")
 				return
 			end
-	
+
 			DATABASE = data
 
 			printToAll("Database loaded")
-	
+
 			onComplete()
 		end)
 	end
-	
 end
 
 ------ CONSTANTS
-DATABASE_URL = "https://raw.githubusercontent.com/bones-bones/hellfall/main/src/data/Hellscube-Database.json"
+DATABASE_URL = "https://skeleton.club/hellfall/Hellscube-Database.json"
 
 DATABASE = nil
 INDEX = nil
@@ -772,13 +770,14 @@ local function match_cards(cards)
 	return matched
 end
 
-local function build_oracle_text(card, pos)
+local function format_text_fields(card, pos)
 	local cost = ""
 	local typeline = ""
 	local pt = ""
 	local loyalty = ""
 	local text = ""
 	local ft = ""
+	local cmc = ""
 
 	-- Generate Cost
 
@@ -838,10 +837,18 @@ local function build_oracle_text(card, pos)
 		end
 	end
 
+	if #pt > 0 then
+		pt = "[b]" .. pt .. "[/b]"
+	end
+
 	-- Generate Loyalty
 
 	if card.Loyalty and card.Loyalty[pos] and #card.Loyalty[pos] > 0 then
 		loyalty = card.Loyalty[pos]
+	end
+	
+	if #loyalty > 0 then
+		loyalty = "[b]" .. loyalty .. "[/b]"
 	end
 
 	-- Generate Text
@@ -853,13 +860,52 @@ local function build_oracle_text(card, pos)
 	-- Generate FT
 
 	if card["Flavor Text"] and card["Flavor Text"][pos] and #card["Flavor Text"][pos] > 0 then
-		ft = string.format("---\n%s\n---", card["Flavor Text"][pos])
+		ft = string.format("---\n%s\n---", card["Flavor Text"][pos]):gsub("\\n", "\n")
 	end
 
-	local segments = { cost, typeline, text, pt, loyalty, ft }
+	return {
+		cost = cost,
+		typeline = typeline,
+		text = text,
+		pt = pt,
+		loyalty = loyalty,
+		ft = ft
+	}
+end
+
+local function build_card_title(name, cmc, textFields)
+	if not cmc then
+		cmc = 0
+	end
+
+	local segments = {
+		name,
+		textFields.typeline,
+		string.format("%s CMC", cmc)
+	}
 	local nonEmptySegments = {}
 
-	for index, value in ipairs(segments) do
+	for _, value in ipairs(segments) do
+		if #value > 0 then
+			table.insert(nonEmptySegments, value)
+		end
+	end
+
+	return table.concat(nonEmptySegments, "\n")
+end
+
+local function build_oracle_text(textFields)
+	local segments = {
+		textFields.cost,
+		textFields.typeline,
+		textFields.text,
+		textFields.pt,
+		textFields.loyalty,
+		textFields.ft
+	}
+	local nonEmptySegments = {}
+
+	for _, value in ipairs(segments) do
 		if #value > 0 then
 			table.insert(nonEmptySegments, value)
 		end
@@ -912,10 +958,12 @@ local function build_card_objects(cards)
 		if card["Card Type(s)"] then
 			for i, type in ipairs(card["Card Type(s)"]) do
 				if type then
+					local textFields = format_text_fields(card, i)
+
 					cardObject.faces[i] = {
 						imageURI = card.Image,
-						name = nameParts[i],
-						oracleText = build_oracle_text(card, i)
+						name = build_card_title(nameParts[i], card.CMC, textFields),
+						oracleText = build_oracle_text(textFields)
 					}
 				end
 			end
@@ -948,7 +996,6 @@ end
 if ENV ~= "tts" then
 	return
 end
-
 
 ------ CARD SPAWNING
 local function jsonForCardFace(face, position, flipped)
@@ -1316,8 +1363,8 @@ function preloadDB()
 		log("DB already loading.")
 	end
 
-	load_database(function ()
-		
+	load_database(function()
+
 	end)
 
 	return 1
@@ -1427,7 +1474,7 @@ function onLoadDeckNotebookButton(_, pc, _)
 end
 
 function onPreloadDBButton(_, pc, _)
-	startLuaCoroutine(self,  "preloadDB")
+	startLuaCoroutine(self, "preloadDB")
 end
 
 function onToggleAdvancedButton(_, _, _)
