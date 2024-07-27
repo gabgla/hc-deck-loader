@@ -853,7 +853,8 @@ local function build_card_objects(cards)
 		local cardObject = {
 			title = card.Name,
 			cmc = card.CMC,
-			faces = {}
+			faces = {},
+			input = card.input
 		}
 
 		local nameParts = {}
