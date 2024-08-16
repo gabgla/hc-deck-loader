@@ -40,7 +40,7 @@ if ENV == "dev" then
 	end
 
 	function load_database(onComplete)
-		if DATABASE then
+		if FALLBACK_DATABASE then
 			return onComplete()
 		end
 
@@ -62,7 +62,7 @@ if ENV == "dev" then
 			return
 		end
 
-		DATABASE = data
+		FALLBACK_DATABASE = data
 
 		onComplete()
 	end
@@ -88,7 +88,7 @@ end
 if HTTP_CLIENT then
 	-- Performs actual request
 	function load_database(onComplete)
-		if DATABASE then
+		if FALLBACK_DATABASE then
 			return onComplete()
 		end
 
@@ -114,7 +114,7 @@ if HTTP_CLIENT then
 				return
 			end
 
-			DATABASE = data
+			FALLBACK_DATABASE = data
 
 			printToAll("Database loaded")
 
@@ -126,7 +126,7 @@ end
 ------ CONSTANTS
 DATABASE_URL = "https://skeleton.club/hellfall/Hellscube-Database.json"
 
-DATABASE = nil
+FALLBACK_DATABASE = nil
 INDEX = nil
 
 DECK_SOURCE_URL = "url"
@@ -928,13 +928,13 @@ local function load_index()
 
 	INDEX = {}
 
-	for key, value in pairs(DATABASE.data) do
+	for key, value in pairs(FALLBACK_DATABASE.data) do
 		INDEX[value.Name] = key
 	end
 end
 
 local function get_card_by_name(name)
-	return DATABASE.data[INDEX[name]]
+	return FALLBACK_DATABASE.data[INDEX[name]]
 end
 
 ------ In Hellscube there are no rules
@@ -1245,7 +1245,7 @@ if ENV == "dev" then
 
 		print("Creating tree")
 		local radixTree = new_radix_tree()
-		for _, value in pairs(DATABASE.data) do
+		for _, value in pairs(FALLBACK_DATABASE.data) do
 			radixTree.add(value.Name)
 		end
 
@@ -1768,3 +1768,4 @@ Currently supported sites:
 
 	drawUI()
 end
+
