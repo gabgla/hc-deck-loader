@@ -40,7 +40,7 @@ if ENV == "dev" then
 	end
 
 	function load_database(onComplete)
-		if FALLBACK_DATABASE then
+		if DATABASE then
 			return onComplete()
 		end
 
@@ -88,7 +88,7 @@ end
 if HTTP_CLIENT then
 	-- Performs actual request
 	function load_database(onComplete)
-		if FALLBACK_DATABASE then
+		if DATABASE then
 			return onComplete()
 		end
 
@@ -928,13 +928,13 @@ local function load_index()
 
 	INDEX = {}
 
-	for key, value in pairs(FALLBACK_DATABASE.data) do
+	for key, value in pairs(DATABASE) do
 		INDEX[value.Name] = key
 	end
 end
 
 local function get_card_by_name(name)
-	return FALLBACK_DATABASE.data[INDEX[name]]
+	return DATABASE[INDEX[name]]
 end
 
 ------ In Hellscube there are no rules
@@ -1013,7 +1013,7 @@ local function match_cards(cards)
 	return matched
 end
 
-local function format_text_fields(card, pos)
+local function format_text_fields(card, side)
 	local cost = ""
 	local typeline = ""
 	local pt = ""
@@ -1021,42 +1021,42 @@ local function format_text_fields(card, pos)
 	local text = ""
 	local ft = ""
 	local cmc = ""
-
+	
 	-- Generate Cost
 
-	if card.Cost and card.Cost[pos] and #card.Cost[pos] > 0 then
-		cost = card.Cost[pos]
+	if side.Cost and #side.Cost > 0 then
+		cost = side.Cost
 	end
 
 	-- Generate Typeline
 
-	if card["Supertype(s)"][pos] and #card["Supertype(s)"][pos] > 0 then
+	if side["Supertype(s)"] and #side["Supertype(s)"] > 0 then
 		local parts = 0
-		for type in card["Supertype(s)"][pos]:gmatch("([^;]+)") do
+		for type in side["Supertype(s)"]:gmatch("([^;]+)") do
 			typeline = typeline .. (parts >= 1 and " " or "") .. type
 			parts = parts + 1
 		end
 	end
 
-	if card["Card Type(s)"][pos] and #card["Card Type(s)"][pos] > 0 then
+	if side["Card Type(s)"] and #side["Card Type(s)"] > 0 then
 		if #typeline > 0 then
 			typeline = typeline .. " "
 		end
 
 		local parts = 0
-		for type in card["Card Type(s)"][pos]:gmatch("([^;]+)") do
+		for type in side["Card Type(s)"]:gmatch("([^;]+)") do
 			typeline = typeline .. (parts >= 1 and " " or "") .. type
 			parts = parts + 1
 		end
 	end
 
-	if card["Subtype(s)"][pos] and #card["Subtype(s)"][pos] > 0 then
+	if side["Subtype(s)"] and #side["Subtype(s)"] > 0 then
 		if #typeline > 0 then
 			typeline = typeline .. " - "
 		end
 
 		local parts = 0
-		for type in card["Subtype(s)"][pos]:gmatch("([^;]+)") do
+		for type in side["Subtype(s)"]:gmatch("([^;]+)") do
 			typeline = typeline .. (parts >= 1 and " " or "") .. type
 			parts = parts + 1
 		end
@@ -1064,15 +1064,15 @@ local function format_text_fields(card, pos)
 
 	-- Generate P/T
 
-	if card.power[pos] and #card.power[pos] > 0 then
-		pt = card.power[pos] .. "/"
+	if side.power and #side.power > 0 then
+		pt = side.power .. "/"
 	end
 
-	if card.toughness[pos] and #card.toughness[pos] > 0 then
+	if side.toughness and #side.toughness > 0 then
 		if #pt > 0 then
-			pt = pt .. card.toughness[pos]
+			pt = pt .. side.toughness
 		else
-			pt = "?/" .. card.toughness[pos]
+			pt = "?/" .. side.toughness
 		end
 	else
 		if #pt > 0 then
@@ -1086,8 +1086,8 @@ local function format_text_fields(card, pos)
 
 	-- Generate Loyalty
 
-	if card.Loyalty and card.Loyalty[pos] and #card.Loyalty[pos] > 0 then
-		loyalty = card.Loyalty[pos]
+	if side.Loyalty and #side.Loyalty > 0 then
+		loyalty = side.Loyalty
 	end
 
 	if #loyalty > 0 then
@@ -1096,14 +1096,14 @@ local function format_text_fields(card, pos)
 
 	-- Generate Text
 
-	if card["Text Box"] and card["Text Box"][pos] and #card["Text Box"][pos] > 0 then
-		text = card["Text Box"][pos]:gsub("\\n", "\n")
+	if side["Text Box"] and #side["Text Box"] > 0 then
+		text = side["Text Box"]:gsub("\\n", "\n")
 	end
 
 	-- Generate FT
 
-	if card["Flavor Text"] and card["Flavor Text"][pos] and #card["Flavor Text"][pos] > 0 then
-		ft = string.format("---\n%s\n---", card["Flavor Text"][pos]):gsub("\\n", "\n")
+	if side["Flavor Text"] and #side["Flavor Text"] > 0 then
+		ft = string.format("---\n%s\n---", side["Flavor Text"]):gsub("\\n", "\n")
 	end
 
 	return {
@@ -1198,10 +1198,10 @@ local function build_card_objects(cards)
 			table.insert(nameParts, card.Name)
 		end
 
-		if card["Card Type(s)"] then
-			for i, type in ipairs(card["Card Type(s)"]) do
+		if card.Sides then
+			for i, type in ipairs(card.Sides) do
 				if type then
-					local textFields = format_text_fields(card, i)
+					local textFields = format_text_fields(card, card.Sides[i])
 					local name
 
 					if i <= #nameParts then
@@ -1237,7 +1237,7 @@ if ENV == "dev" then
 
 	print("Parsing list")
 	local cards = parse_card_list(list)
-	print("Loading DB")
+	-- print("Loading DB")
 
 	load_database(function()
 		print("Creating index")
@@ -1245,7 +1245,7 @@ if ENV == "dev" then
 
 		print("Creating tree")
 		local radixTree = new_radix_tree()
-		for _, value in pairs(FALLBACK_DATABASE.data) do
+		for _, value in pairs(DATABASE) do
 			radixTree.add(value.Name)
 		end
 

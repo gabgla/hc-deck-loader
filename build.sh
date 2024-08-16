@@ -1,0 +1,1 @@
+python3 generate_code.py > ./dist/main.lua

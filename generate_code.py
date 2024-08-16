@@ -4,20 +4,20 @@ import requests
 import json
 
 DB_URL = 'https://raw.githubusercontent.com/bones-bones/hellfall/main/src/data/Hellscube-Database.json'
+SCAN_DIR = './src'
 
 def build():
     database = fetch_database()
-    generate_inline_database(database)
+    database_code_block = generate_inline_database(database)
+    script_parts = get_script_parts()
 
-    # script_parts = get_script_parts()
-
-    pass
+    return '\n'.join([database_code_block] + script_parts)
 
 def get_script_parts() -> list[str]:
     files = []
-    for file_path in os.listdir('./src'):
-        file = io.open(file_path, 'r')
-        files.append(file.readlines())
+    for file_name in os.listdir(SCAN_DIR):
+        file = io.open(os.path.join(SCAN_DIR, file_name), 'r')
+        files.append(file.read())
         file.close()
 
     return files
@@ -55,6 +55,8 @@ def generate_inline_database(database: dict) -> str:
 
     for c in database['data']:
 
+        process_edge_cases(c)
+
         sides = []
         
         # Small optimisation: Don't bother processing empty faces
@@ -70,9 +72,6 @@ def generate_inline_database(database: dict) -> str:
         lua_assignments = list(f'["{f}"]="{lua_escape(c[f]) if f in c else ""}"' for f in fields) 
         lua_assignments.append(f'Sides={{{",".join(side_assignments)}}}')
 
-        # if c['Name'] == 'Phil Swift, the Divider':
-        #     print(f'{{{",".join(lua_assignments)}}}')
-
         cards.append(f'{{{",".join(lua_assignments)}}}')
 
     return f'DATABASE = {{{",".join(cards)}}}'
@@ -84,6 +83,18 @@ def lua_escape(input) -> str:
     if type(input) is int:
         input = str(input)    
 
-    return input.strip().replace('\"', '\\"').replace('\r', '\\r').replace('\n', '\\n').replace('\t', '\\t')
-build()
+    return input \
+        .strip() \
+        .replace('\\', '\\\\') \
+        .replace('\"', '\\"') \
+        .replace('\r', '\\r') \
+        .replace('\n', '\\n') \
+        .replace('\t', '\\t') \
+        # .replace('\\m', '\\\\m')
+        # .replace('\\N', '\\\\N') \
 
+def process_edge_cases(c):
+    if c['Name'] == 'Spork Elemental':
+        c['Text Box'][0] = 'Trample, haste\nAt the beginning of the next end step, sacrifice a Food or a creature. This only happens once.'
+
+print(build())
