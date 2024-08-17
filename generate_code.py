@@ -16,6 +16,9 @@ def build():
 def get_script_parts() -> list[str]:
     files = []
     for file_name in os.listdir(SCAN_DIR):
+        if not file_name.endswith('.lua'):
+            continue
+
         file = io.open(os.path.join(SCAN_DIR, file_name), 'r')
         files.append(file.read())
         file.close()

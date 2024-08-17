@@ -1,0 +1,77 @@
+{
+  "SaveName": "",
+  "Date": "",
+  "VersionNumber": "",
+  "GameMode": "",
+  "GameType": "",
+  "GameComplexity": "",
+  "Tags": [],
+  "Gravity": 0.5,
+  "PlayArea": 0.5,
+  "Table": "",
+  "Sky": "",
+  "Note": "",
+  "TabStates": {},
+  "LuaScript": "",
+  "LuaScriptState": "",
+  "XmlUI": "",
+  "ObjectStates": [
+    {
+      "GUID": "5fd2e9",
+      "Name": "Custom_Token",
+      "Transform": {
+        "posX": -1.62450325,
+        "posY": 1.1594249,
+        "posZ": 12.93466,
+        "rotX": 358.256134,
+        "rotY": 180.0319,
+        "rotZ": -2.4011E-06,
+        "scaleX": 3.5,
+        "scaleY": 1.0,
+        "scaleZ": 3.5
+      },
+      "Nickname": "HC Deck Loader",
+      "Description": "Add deck to notebook then click button to import",
+      "GMNotes": "",
+      "AltLookAngle": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "ColorDiffuse": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0
+      },
+      "LayoutGroupSortIndex": 0,
+      "Value": 0,
+      "Locked": false,
+      "Grid": true,
+      "Snap": true,
+      "IgnoreFoW": false,
+      "MeasureMovement": false,
+      "DragSelectable": true,
+      "Autoraise": true,
+      "Sticky": true,
+      "Tooltip": true,
+      "GridProjection": false,
+      "HideWhenFaceDown": false,
+      "Hands": false,
+      "CustomImage": {
+        "ImageURL": "https://steamusercontent-a.akamaihd.net/ugc/1727667649958793225/3B162DEB73CAFDA089D342F17A901EE70C23BF0F/",
+        "ImageSecondaryURL": "",
+        "ImageScalar": 1.0,
+        "WidthScale": 0.0,
+        "CustomToken": {
+          "Thickness": 0.1,
+          "MergeDistancePixels": 15.0,
+          "StandUp": false,
+          "Stackable": false
+        }
+      },
+      "LuaScript": "<<LUASCRIPT>>",
+      "LuaScriptState": "",
+      "XmlUI": "<Defaults>\r\n    <Text alignment=\"middleLeft\" color=\"White\" minWidth=\"10\"/>\r\n    <InputField alignment=\"middleLeft\"/>\r\n    <Toggle alignment=\"middleLeft\" textColor=\"White\"/>\r\n    <Panel alignment=\"middleLeft\"/>\r\n</Defaults>\r\n\r\n<Panel id=\"MTGDeckLoaderAdvancedPanel\" position=\"80 170 -10\" rotation=\"180 180 0\" width=\"300\" height=\"300\">\r\n    <Panel position=\"0 0 0\">\r\n        <Text>Card Back</Text>\r\n        <InputField position = \"18 0 0\" onEndEdit=\"mtgdl__onCardBackInput\" placeholder=\"Enter card back URL\"></InputField>\r\n        <Toggle position=\"185 0 0\" onValueChanged=\"mtgdl__onTokenButtonsInput\" isOn=\"false\">Token Buttons</Toggle>\r\n    </Panel>\r\n\r\n    <Panel position=\"0 -40 0\">\r\n        <Text fontSize=\"10\">Language (beta)</Text>\r\n        <InputField position=\"18 0 0\" onEndEdit=\"mtgdl__onLanguageInput\" placeholder=\"English\"></InputField>\r\n        <Toggle position=\"185 0 0\" onValueChanged=\"mtgdl__onForceLanguageInput\">Force Language</Toggle>\r\n    </Panel>\r\n\r\n    <Panel position=\"0 -80 0\">\r\n        <Toggle position=\"-70 0 0\" onValueChanged=\"mtgdl__onBlowCacheInput\" fontSize=\"10\">Force Redownload Images</Toggle>\r\n    </Panel>\r\n    <Panel position=\"170 -80 0\">\r\n        <Toggle position=\"-70 0 0\" isOn=\"true\" onValueChanged=\"mtgdl__onPNGGraphicsInput\" fontSize=\"10\">Use PNG Graphics</Toggle>\r\n    </Panel>\r\n    <Panel position=\"300 -80 0\">\r\n        <Toggle position=\"-70 0 0\" onValueChanged=\"mtgdl__onFaceDownInput\" fontSize=\"10\">Spaw everything face-down</Toggle>\r\n    </Panel>\r\n</Panel>"
+    }
+  ]
+}
