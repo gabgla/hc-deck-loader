@@ -56,7 +56,7 @@ def generate_inline_database(database: dict) -> str:
         'toughness',
         'Loyalty',
         'Text Box',
-        'Flavor Text'                
+        'Flavor Text'
     ]
 
     cards = []
@@ -73,9 +73,9 @@ def generate_inline_database(database: dict) -> str:
             for i, t in enumerate(c['Card Type(s)']):
                 if t is None or t == "":
                     continue
-                
+
                 sides.append(list(f'["{f}"]="{lua_escape(c[f][i]) if f in c else ""}"' for f in side_fields))
-        
+
         side_assignments = (f'{{{",".join(s)}}}' for s in sides)
         lua_assignments = list(f'["{f}"]="{lua_escape(c[f]) if f in c else ""}"' for f in fields) 
         lua_assignments.append(f'Sides={{{",".join(side_assignments)}}}')

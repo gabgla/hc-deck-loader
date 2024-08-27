@@ -387,19 +387,19 @@ local function drawUI()
 	-- 	value          = deckURL,
 	-- })
 
-	self.createButton({
-		click_function = "onPreloadDBButton",
-		function_owner = self,
-		label          = "Preload DB",
-		position       = { -1, 0.1, 1.15 },
-		rotation       = { 0, 0, 0 },
-		width          = 850,
-		height         = 160,
-		font_size      = 80,
-		color          = { 0.5, 0.5, 0.5 },
-		font_color     = { r = 1, b = 1, g = 1 },
-		tooltip        = "Click to load deck preload the database",
-	})
+	-- self.createButton({
+	-- 	click_function = "onPreloadDBButton",
+	-- 	function_owner = self,
+	-- 	label          = "Preload DB",
+	-- 	position       = { -1, 0.1, 1.15 },
+	-- 	rotation       = { 0, 0, 0 },
+	-- 	width          = 850,
+	-- 	height         = 160,
+	-- 	font_size      = 80,
+	-- 	color          = { 0.5, 0.5, 0.5 },
+	-- 	font_color     = { r = 1, b = 1, g = 1 },
+	-- 	tooltip        = "Click to load deck preload the database",
+	-- })
 
 	self.createButton({
 		click_function = "onLoadDeckNotebookButton",
