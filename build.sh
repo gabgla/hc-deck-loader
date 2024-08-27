@@ -1,3 +1,5 @@
+#!/bin/bash
+
 VERSION=$(jq -r .version meta.json)
 SCRIPT_PATH=./dist/main.lua
 DIST_OBJ_PATH=./dist/HC_Deck_Loader_v$VERSION.json

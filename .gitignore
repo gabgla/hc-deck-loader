@@ -400,3 +400,4 @@ FodyWeavers.xsd
 # My stuff
 tools/*.txt
 dist/*
+.vscode/*

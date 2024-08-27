@@ -13,6 +13,10 @@ def build():
 
     return '\n'.join([database_code_block] + script_parts)
 
+def fetch_database() -> dict:
+    response = requests.get(DB_URL)
+    return json.loads(response.content)
+
 def get_script_parts() -> list[str]:
     files = []
     for file_name in os.listdir(SCAN_DIR):
@@ -24,10 +28,6 @@ def get_script_parts() -> list[str]:
         file.close()
 
     return files
-
-def fetch_database() -> dict:
-    response = requests.get(DB_URL)
-    return json.loads(response.content)
 
 def generate_inline_database(database: dict) -> str:
     fields = [
