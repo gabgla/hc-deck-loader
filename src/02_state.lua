@@ -1,0 +1,12 @@
+------ GLOBAL STATE
+lock = false
+playerColor = nil
+deckSource = nil
+advanced = false
+cardBackInput = ""
+languageInput = ""
+forceLanguage = false
+enableTokenButtons = false
+blowCache = false
+pngGraphics = true
+spawnEverythingFaceDown = false

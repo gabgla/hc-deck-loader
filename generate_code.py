@@ -2,9 +2,14 @@ import os
 import io
 import requests
 import json
+import logging
+import glob
+import re
 
 DB_URL = 'https://raw.githubusercontent.com/bones-bones/hellfall/main/src/data/Hellscube-Database.json'
 SCAN_DIR = './src'
+
+numbers = re.compile(r'(\d+)')
 
 def build():
     database = fetch_database()
@@ -19,11 +24,11 @@ def fetch_database() -> dict:
 
 def get_script_parts() -> list[str]:
     files = []
-    for file_name in os.listdir(SCAN_DIR):
-        if not file_name.endswith('.lua'):
-            continue
+    path = os.path.join(SCAN_DIR, '*.lua')
+    for file_name in sorted(glob.glob(path), key=numerical_sort):
+        logging.warning(file_name)
 
-        file = io.open(os.path.join(SCAN_DIR, file_name), 'r')
+        file = io.open(file_name, 'r')
         files.append(file.read())
         file.close()
 
@@ -99,5 +104,10 @@ def lua_escape(input) -> str:
 def process_edge_cases(c):
     if c['Name'] == 'Spork Elemental':
         c['Text Box'][0] = 'Trample, haste\nAt the beginning of the next end step, sacrifice a Food or a creature. This only happens once.'
+
+def numerical_sort(value):
+    parts = numbers.split(value)
+    parts[1::2] = map(int, parts[1::2])
+    return parts
 
 print(build())
