@@ -262,6 +262,12 @@ local function build_card_objects(cards)
 			input = card.input
 		}
 
+		-- Process special layouts overrides
+		local layout = LAYOUTS[card.Name]
+		if layout ~= nil then
+			cardObject.layout = layout
+		end
+
 		local nameParts = {}
 
 		-- TODO: Circumvent Moonsharp's pattern matching limitation
@@ -281,18 +287,18 @@ local function build_card_objects(cards)
 					local textFields = format_text_fields(card, card.Sides[i])
 					local name
 
-					if i <= #nameParts then
+					-- Use split names for DFCs, otherwise use full name
+					if cardObject.layout and cardObject.layout.type == "mfc" and nameParts[i] then
 						name = nameParts[i]
-						cardObject.faces[i] = {
-
-							imageURI = card.Image,
-							name = build_card_title(name, card.CMC, textFields),
-							oracleText = build_oracle_text(textFields)
-						}
 					else
-						-- Skip missing names for now
 						name = card.Name
 					end
+
+					cardObject.faces[i] = {
+						imageURI = card.Image,
+						name = build_card_title(name, card.CMC, textFields),
+						oracleText = build_oracle_text(textFields)
+					}
 				end
 			end
 		else

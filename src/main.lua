@@ -42,7 +42,7 @@ if ENV ~= "tts" then
 end
 
 ------ CARD SPAWNING
-local function jsonForCardFace(face, position, flipped, count, index)
+local function jsonForCardFace(face, position, flipped, count, index, layout)
 	local rotation = self.getRotation()
 
 	local rotZ = rotation.z
@@ -52,6 +52,21 @@ local function jsonForCardFace(face, position, flipped, count, index)
 
 	if not count or count <= 0 then
 		count = 1
+	end
+
+	local yCount = 1
+	local sideways = false
+
+	-- Use layout overrides to position images correctly
+	if layout then
+		if layout.grid then
+			count = layout.grid.x
+			yCount = layout.grid.y
+		end
+
+		if layout.rotation == 90 then
+			sideways = true
+		end
 	end
 
 	local json = {
@@ -82,7 +97,7 @@ local function jsonForCardFace(face, position, flipped, count, index)
 		HideWhenFaceDown = true,
 		Hands = true,
 		CardID = 2440000 + index,
-		SidewaysCard = false,
+		-- SidewaysCard = false,
 		CustomDeck = {},
 		LuaScript = "",
 		LuaScriptState = "",
@@ -92,10 +107,11 @@ local function jsonForCardFace(face, position, flipped, count, index)
 		FaceURL = face.imageURI,
 		BackURL = getCardBack(),
 		NumWidth = count,
-		NumHeight = 1,
+		NumHeight = yCount,
 		BackIsHidden = true,
 		UniqueBack = false,
-		Type = 0
+		Type = 0,
+		Sideways = sideways
 	}
 
 	if enableTokenButtons and face.tokenData and face.tokenData[1] and face.tokenData[1].name and string.len(face.tokenData[1].name) > 0 then
@@ -108,7 +124,8 @@ end
 -- Spawns the given card [faces] at [position].
 -- Card will be face down if [flipped].
 -- Calls [onFullySpawned] when the object is spawned.
-local function spawnCard(faces, position, flipped, onFullySpawned)
+local function spawnCard(card, position, flipped, onFullySpawned)
+	local faces = card.faces
 	if not faces or not faces[1] then
 		faces = { {
 			name = "?",
@@ -123,12 +140,34 @@ local function spawnCard(faces, position, flipped, onFullySpawned)
 		flipped = true
 	end
 
-	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces, 0)
+	-- Apply layout overrides
+	if card.layout then
+		while card.layout.sides < #faces do
+			local previous_face = faces[#faces-1]
+			local current_face = faces[#faces]
+
+			previous_face.oracleText = previous_face.oracleText .. "\n//\n" .. current_face.oracleText
+
+			table.remove(faces, #faces)
+		end
+
+		for i = #faces, card.layout.sides - 1 do
+			local new_face = {
+				name = "",
+				oracleText = "",
+				imageURI = faces[1].imageURI
+			}
+
+			table.insert(faces, new_face)
+		end
+	end
+
+	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces, 0, card.layout)
 
 	if #faces > 1 then
 		jsonFace1.States = {}
 		for i = 2, (#(faces)) do
-			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces, i - 1)
+			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces, i - 1, card.layout)
 
 			jsonFace1.States[tostring(i)] = jsonFaceI
 		end
@@ -164,7 +203,7 @@ local function spawnDeck(cards, name, position, flipped, onFullySpawned, onError
 			end
 
 			incSem()
-			spawnCard(card.faces, position, flipped, function(obj)
+			spawnCard(card, position, flipped, function(obj)
 				table.insert(cardObjects, obj)
 				decSem()
 			end)
@@ -530,4 +569,3 @@ Paste your decklist in MTG Arena format into your color's notebook, then click L
 
 	drawUI()
 end
-

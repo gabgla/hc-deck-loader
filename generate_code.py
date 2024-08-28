@@ -86,10 +86,10 @@ def generate_inline_database(database: dict) -> str:
 
 def lua_escape(input) -> str:
     if not input:
-        return input
+        return ''
 
     if type(input) is int:
-        input = str(input)    
+        input = str(input)
 
     return input \
         .strip() \

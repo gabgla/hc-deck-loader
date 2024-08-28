@@ -1,0 +1,183 @@
+- name: Elden Ring Boss // Elden Ring Boss, Phase Two // Cool Boss Weapon Token # Update
+  type: mfc
+  sides: 3
+  grid:
+    x: 3
+    y: 1
+- name: Hellscube Imperial Appraiser
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+  overrides:
+    1:
+      Name: Sticker Sheet
+- name: Ranger With the Big Iron on His Hip # Update
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+  overrides:
+    1:
+      Name: Big Iron
+- name: ENTER // EXIT
+  type: split
+  sides: 1
+  rotation: 90
+- name: Smith of Sword and Sword // Sword of ____ and ____
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: Hellscube Rebalancing Team # update
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+  overrides:
+    1:
+      Name: Sticker Sheet
+- name: URZA // 'S HAND
+  type: adventure
+  sides: 1
+- name: Smart Fella // Fart Smella
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: s // wich
+  type: split
+  sides: 1
+  rotation: 90
+- name: Draw the Out // Be Consistent // Draw the Out
+  type: split
+  sides: 1
+- name: Saint Traft // Geist of Saint Traft
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: "HC6: MrMirari, Mod of Lies // Van, Hellscube Impostor"
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: Sisyphus and The Rock GX // Dwayne "The Rock" Johnson
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: "HC6: Friend Elemental // Foe Elemental"
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: "HC6: The Sniper // Jarate"
+  type: adventure
+  sides: 1
+- name: Honk Honk
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: B             o                o # update
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+  overrides:
+    1:
+      Name: Boo Token
+- name: Shocker//Wheeler
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: The Tomato Town Massacre // The Chug Jug
+  type: mfc
+  sides: 2
+  grid:
+    x: 3
+    y: 1
+  overrides:
+    0:
+      x_size: 2
+      rotation: 90
+- name: Blood ghast // Crip Ghast
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: "HC6: goblin skeleton"
+  type: adventure
+  sides: 1
+- name: Doomguy and Isabelle
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: That One Stock American Cartoon Episode
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: Termite Infestation # update
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+  overrides:
+    1:
+      Name: Carton Token
+- name: giraffe legs // giraffe head
+  type: mfc
+  sides: 2
+  grid:
+    x: 1
+    y: 2
+- name: They Don't Stop Coming // They Don't Stop Coming // They Don't Stop Coming // ...
+  type: split
+  sides: 1
+- name: Duolingo Bird // Spanish // Vanish
+  type: adventure
+  sides: 1
+- name: The Based God
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: "HC6: Llanowar // Elves"
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: Half-Thriving ____ Half-Thriving ____
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: The Prismatic Lensite // The Prismatic Lensaurus
+  type: mfc
+  sides: 2
+  grid:
+    x: 2
+    y: 1
