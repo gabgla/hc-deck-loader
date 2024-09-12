@@ -10,3 +10,4 @@ enableTokenButtons = false
 blowCache = false
 pngGraphics = true
 spawnEverythingFaceDown = false
+proxyNonStandardLayouts = false

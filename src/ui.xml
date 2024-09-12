@@ -13,7 +13,15 @@
     </Panel>
 
     <Panel position="0 -40 0">
-        <Text fontSize="10">Language (beta)</Text>
+        <Toggle position="-70 0 0" onValueChanged="mtgdl__onProxyNonStandardLayouts" fontSize="10">Proxy non-standard layouts</Toggle>
+    </Panel>
+
+    <Panel position="180 -40 0">
+        <Toggle position="-70 0 0" onValueChanged="mtgdl__onFaceDownInput" fontSize="10">Spawn everything face-down</Toggle>
+    </Panel>
+
+    <!-- <Panel position="0 -40 0">
+        <Text fontSize="10">Proxy non-stadard layouts</Text>
         <InputField position="18 0 0" onEndEdit="mtgdl__onLanguageInput" placeholder="English"></InputField>
         <Toggle position="185 0 0" onValueChanged="mtgdl__onForceLanguageInput">Force Language</Toggle>
     </Panel>
@@ -23,8 +31,8 @@
     </Panel>
     <Panel position="170 -80 0">
         <Toggle position="-70 0 0" isOn="true" onValueChanged="mtgdl__onPNGGraphicsInput" fontSize="10">Use PNG Graphics</Toggle>
-    </Panel>
-    <Panel position="300 -80 0">
+    </Panel> -->
+    <!-- <Panel position="300 -80 0">
         <Toggle position="-70 0 0" onValueChanged="mtgdl__onFaceDownInput" fontSize="10">Spaw everything face-down</Toggle>
-    </Panel>
+    </Panel> -->
 </Panel>

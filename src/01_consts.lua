@@ -25,3 +25,14 @@ UI_ADVANCED_PANEL = "MTGDeckLoaderAdvancedPanel"
 UI_CARD_BACK_INPUT = "MTGDeckLoaderCardBackInput"
 UI_LANGUAGE_INPUT = "MTGDeckLoaderLanguageInput"
 UI_FORCE_LANGUAGE_TOGGLE = "MTGDeckLoaderForceLanguageToggleID"
+
+------ Placeholder Colors
+
+PROXY_LAND = "https://i.imgur.com/lL2k8Rj.png"
+PROXY_COLORLESS = "https://i.imgur.com/QJpbImB.png"
+PROXY_WHITE = "https://i.imgur.com/wJTMqlD.png"
+PROXY_BLUE = "https://i.imgur.com/w6N6YxS.png"
+PROXY_BLACK = "https://i.imgur.com/qxObydk.png"
+PROXY_RED = "https://i.imgur.com/Q3iPTMe.png"
+PROXY_GREEN = "https://i.imgur.com/bgrIbp9.png"
+PROXY_GOLD = "https://i.imgur.com/qJVyEPK.png"

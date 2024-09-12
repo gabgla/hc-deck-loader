@@ -251,6 +251,47 @@ local function contains_sequence(inputStr, sequence)
 	return false
 end
 
+local function get_proxy_face(card, side)
+	local colors = {}
+	if card["Color(s)"] and #card["Color(s)"] > 0 then
+		for color in card["Color(s)"]:gmatch("([^;]+)") do
+			table.insert(colors, color)
+		end
+	end
+
+	if #colors == 0 then
+		if string.find(side["Card Type(s)"], "Land") then
+			return PROXY_LAND
+		else
+			return PROXY_COLORLESS
+		end
+	else
+		if #colors >= 2 then
+			return PROXY_GOLD
+		end
+
+		if colors[1] == "White" then
+			return PROXY_WHITE
+		end
+
+		if colors[1] == "Blue" then
+			return PROXY_BLUE
+		end
+
+		if colors[1] == "Black" then
+			return PROXY_BLACK
+		end
+
+		if colors[1] == "Red" then
+			return PROXY_RED
+		end
+
+		if colors[1] == "Green" then
+			return PROXY_GREEN
+		end
+	end
+end
+
 local function build_card_objects(cards)
 	local cardObjects = {}
 
@@ -299,6 +340,10 @@ local function build_card_objects(cards)
 						name = build_card_title(name, card.CMC, textFields),
 						oracleText = build_oracle_text(textFields)
 					}
+
+					if proxyNonStandardLayouts and cardObject.layout and cardObject.layout.aspect and cardObject.layout.aspect == "other" then
+						cardObject.faces[i].imageURI = get_proxy_face(card, card.Sides[i])
+					end
 				end
 			end
 		else

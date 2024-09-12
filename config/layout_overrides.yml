@@ -1,3 +1,4 @@
+# HC6
 - name: Elden Ring Boss // Elden Ring Boss, Phase Two // Cool Boss Weapon Token # Update
   type: mfc
   sides: 3
@@ -26,6 +27,7 @@
   type: split
   sides: 1
   rotation: 90
+  aspect: other
 - name: Smith of Sword and Sword // Sword of ____ and ____
   type: mfc
   sides: 2
@@ -54,9 +56,11 @@
   type: split
   sides: 1
   rotation: 90
+  aspect: other
 - name: Draw the Out // Be Consistent // Draw the Out
   type: split
   sides: 1
+  aspect: other
 - name: Saint Traft // Geist of Saint Traft
   type: mfc
   sides: 2
@@ -115,6 +119,7 @@
     0:
       x_size: 2
       rotation: 90
+  aspect: other
 - name: Blood ghast // Crip Ghast
   type: mfc
   sides: 2
@@ -154,6 +159,7 @@
 - name: They Don't Stop Coming // They Don't Stop Coming // They Don't Stop Coming // ...
   type: split
   sides: 1
+  aspect: other
 - name: Duolingo Bird // Spanish // Vanish
   type: adventure
   sides: 1
@@ -181,3 +187,61 @@
   grid:
     x: 2
     y: 1
+- name: Barbie // Oppenheimer
+  type: split
+  sides: 1
+  aspect: other
+- name: Loot That Body
+  type: attached
+  sides: 2
+  grid:
+    x: 2
+    y: 1
+- name: Dinosaurs Never Went to Church
+  type: normal
+  sides: 1
+  aspect: other
+- name: Ice cube down shirt prank - youtube
+  type: normal
+  sides: 1
+  aspect: other
+- name: "HC6: Freaky Pizza"
+  type: normal
+  sides: 1
+  aspect: other
+- name: You see a number of goblins
+  type: normal
+  sides: 1
+  aspect: other
+- name: "HC6: // Do"
+  type: normal
+  sides: 1
+  aspect: other
+- name: "HC6: Hell's Cube"
+  type: normal
+  sides: 1
+  aspect: other
+- name: Dissolving Wilds
+  type: normal
+  sides: 1
+  aspect: other
+- name: library of babel
+  type: normal
+  sides: 1
+  aspect: other
+- name: help me make this card elemental
+  type: normal
+  sides: 1
+  aspect: other
+- name: Super weaner
+  type: normal
+  sides: 1
+  aspect: other
+- name: yeah it's a 7
+  type: normal
+  sides: 1
+  aspect: other
+- name: Holy Fuck, There's A Hornet in My Car ?
+  type: normal
+  sides: 1
+  aspect: other

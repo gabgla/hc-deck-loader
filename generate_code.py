@@ -5,26 +5,26 @@ import json
 import logging
 import glob
 import re
+import yaml
 
 DB_URL = 'https://raw.githubusercontent.com/bones-bones/hellfall/main/src/data/Hellscube-Database.json'
 SCAN_DIR = './src'
+CONFIG_PATH = './config/layout_overrides.yml'
 
 numbers = re.compile(r'(\d+)')
 
 def build():
-    database = fetch_database()
+    database = fetch_database(DB_URL)
     database_code_block = generate_inline_database(database)
-    script_parts = get_script_parts()
+    layout_config = generate_layout_config(CONFIG_PATH)
+    script_parts = get_script_parts(SCAN_DIR)
 
-    return '\n'.join([database_code_block] + script_parts)
+    return '\n'.join([database_code_block] + [layout_config] + script_parts)
 
-def fetch_database() -> dict:
-    response = requests.get(DB_URL)
-    return json.loads(response.content)
 
-def get_script_parts() -> list[str]:
+def get_script_parts(scan_path) -> list[str]:
     files = []
-    path = os.path.join(SCAN_DIR, '*.lua')
+    path = os.path.join(scan_path, '*.lua')
     for file_name in sorted(glob.glob(path), key=numerical_sort):
         logging.warning(file_name)
 
@@ -33,6 +33,37 @@ def get_script_parts() -> list[str]:
         file.close()
 
     return files
+
+def generate_layout_config(config_path):
+    with open(config_path, 'r') as file:
+       config = yaml.safe_load(file)
+       file.close()
+
+    entries = []
+
+    for c in config:
+        parts = []
+
+        parts.append(f'type="{c["type"]}"')
+        parts.append(f'sides={c["sides"]}')
+
+        if 'aspect' in c:
+            parts.append(f'aspect="{c["aspect"]}"')
+
+        if 'rotation' in c:
+            parts.append(f'rotation={c["rotation"]}')
+
+        if 'grid' in c:
+            parts.append(f'grid={{x={c["grid"]["x"]},y={c["grid"]["y"]}}}')
+
+        entry = f'["{lua_escape(c["name"])}"]={{{",".join(parts)}}}'
+        entries.append(entry)
+
+    return f'LAYOUTS = {{{",".join(entries)}}}'
+
+def fetch_database(db_url) -> dict:
+    response = requests.get(db_url)
+    return json.loads(response.content)
 
 def generate_inline_database(database: dict) -> str:
     fields = [

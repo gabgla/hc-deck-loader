@@ -42,31 +42,15 @@ if ENV ~= "tts" then
 end
 
 ------ CARD SPAWNING
-local function jsonForCardFace(face, position, flipped, count, index, layout)
+local function jsonForCardFace(face, position, flipped, count, index, card)
 	local rotation = self.getRotation()
 
 	local rotZ = rotation.z
 	if flipped then
 		rotZ = math.fmod(rotZ + 180, 360)
 	end
-
 	if not count or count <= 0 then
 		count = 1
-	end
-
-	local yCount = 1
-	local sideways = false
-
-	-- Use layout overrides to position images correctly
-	if layout then
-		if layout.grid then
-			count = layout.grid.x
-			yCount = layout.grid.y
-		end
-
-		if layout.rotation == 90 then
-			sideways = true
-		end
 	end
 
 	local json = {
@@ -97,7 +81,7 @@ local function jsonForCardFace(face, position, flipped, count, index, layout)
 		HideWhenFaceDown = true,
 		Hands = true,
 		CardID = 2440000 + index,
-		-- SidewaysCard = false,
+		SidewaysCard = false,
 		CustomDeck = {},
 		LuaScript = "",
 		LuaScriptState = "",
@@ -107,12 +91,21 @@ local function jsonForCardFace(face, position, flipped, count, index, layout)
 		FaceURL = face.imageURI,
 		BackURL = getCardBack(),
 		NumWidth = count,
-		NumHeight = yCount,
+		NumHeight = 1,
 		BackIsHidden = true,
 		UniqueBack = false,
 		Type = 0,
-		Sideways = sideways
+		Sideways = false
 	}
+
+	-- Use layout overrides to position images correctly
+	if card.layout then
+		local layout = card.layout
+		if not (proxyNonStandardLayouts and layout.aspect and layout.aspect == "other") and layout.grid then
+			json.CustomDeck["24400"].NumWidth = layout.grid.x
+			json.CustomDeck["24400"].NumHeight = layout.grid.y
+		end
+	end
 
 	if enableTokenButtons and face.tokenData and face.tokenData[1] and face.tokenData[1].name and string.len(face.tokenData[1].name) > 0 then
 		printErr("Token buttons not implemented.")
@@ -162,12 +155,12 @@ local function spawnCard(card, position, flipped, onFullySpawned)
 		end
 	end
 
-	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces, 0, card.layout)
+	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces, 0, card)
 
 	if #faces > 1 then
 		jsonFace1.States = {}
 		for i = 2, (#(faces)) do
-			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces, i - 1, card.layout)
+			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces, i - 1, card)
 
 			jsonFace1.States[tostring(i)] = jsonFaceI
 		end
@@ -536,6 +529,10 @@ end
 
 function mtgdl__onLanguageInput(_, value, _)
 	languageInput = value
+end
+
+function mtgdl__onProxyNonStandardLayouts(_, value, _)
+	proxyNonStandardLayouts = stringToBool(value)
 end
 
 function mtgdl__onForceLanguageInput(_, value, _)
