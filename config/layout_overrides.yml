@@ -110,8 +110,8 @@
     x: 2
     y: 1
 - name: The Tomato Town Massacre // The Chug Jug
-  type: mfc
-  sides: 2
+  type: other
+  sides: 1
   grid:
     x: 3
     y: 1
@@ -197,6 +197,12 @@
   grid:
     x: 2
     y: 1
+- name: Dante Alighieri # fix. where side?
+  type: other
+  sides: 1
+- name: Animate Player
+  type: other
+  sides: 1
 - name: Dinosaurs Never Went to Church
   type: normal
   sides: 1
