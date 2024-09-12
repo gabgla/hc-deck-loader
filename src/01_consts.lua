@@ -16,6 +16,7 @@ TOKENS_POSITION_OFFSET = { -0.7286, 0.2, -0.8257 }
 DEFAULT_CARDBACK = "https://i.imgur.com/ovmRjIz.jpeg"
 DEFAULT_LANGUAGE = "en"
 
+
 LANGUAGES = {
 	["en"] = "en"
 }
@@ -27,6 +28,8 @@ UI_LANGUAGE_INPUT = "MTGDeckLoaderLanguageInput"
 UI_FORCE_LANGUAGE_TOGGLE = "MTGDeckLoaderForceLanguageToggleID"
 
 ------ Placeholder Colors
+
+NOT_FOUND_FACE = "https://vignette.wikia.nocookie.net/yugioh/images/9/94/Back-Anime-2.png/revision/latest?cb=20110624090942"
 
 PROXY_LAND = "https://i.imgur.com/lL2k8Rj.png"
 PROXY_COLORLESS = "https://i.imgur.com/QJpbImB.png"

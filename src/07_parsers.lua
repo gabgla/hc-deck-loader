@@ -194,7 +194,7 @@ local function format_text_fields(card, side)
 end
 
 local function build_card_title(name, cmc, textFields)
-	if not cmc then
+	if not cmc or #cmc == 0 then
 		cmc = 0
 	end
 

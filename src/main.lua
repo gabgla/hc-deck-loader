@@ -121,10 +121,9 @@ local function spawnCard(card, position, flipped, onFullySpawned)
 	local faces = card.faces
 	if not faces or not faces[1] then
 		faces = { {
-			name = "?",
+			name = card.title,
 			oracleText = "Card not found",
-			imageURI =
-			"https://vignette.wikia.nocookie.net/yugioh/images/9/94/Back-Anime-2.png/revision/latest?cb=20110624090942",
+			imageURI = NOT_FOUND_FACE,
 		} }
 	end
 
@@ -188,10 +187,9 @@ local function spawnDeck(cards, name, position, flipped, onFullySpawned, onError
 		for i = 1, (card.input.count or 1) do
 			if not card.faces or not card.faces[1] then
 				card.faces = { {
-					name = card.Name,
+					name = card.title,
 					oracleText = "Card not found",
-					imageURI =
-					"https://vignette.wikia.nocookie.net/yugioh/images/9/94/Back-Anime-2.png/revision/latest?cb=20110624090942",
+					imageURI = NOT_FOUND_FACE
 				} }
 			end
 
