@@ -18,6 +18,8 @@ def main():
 
 def build(destination_path):
     database = fetch_database(DB_URL)
+    add_basics(database)
+
     database_code_block = generate_inline_database(database)
     layout_config = generate_layout_config(CONFIG_PATH)
     script_parts = get_script_parts(SCAN_DIR)
@@ -70,6 +72,60 @@ def generate_layout_config(config_path):
 def fetch_database(db_url) -> dict:
     response = requests.get(db_url)
     return json.loads(response.content)
+
+def add_basics(database):
+    basics = [
+        {
+            'Name': 'Plains',
+            'Image': 'https://lh3.googleusercontent.com/d/15NJUlWG7iT0MxFKjNSc9-AFMXXOdOqYs',
+            'Text': '({T}: Add {W}.)'
+        },
+        {
+            'Name': 'Island',
+            'Image': 'https://lh3.googleusercontent.com/d/1h9cl7YVFPOtsRATXgcEqH5vtLcLMl0YY',
+            'Text': '({T}: Add {U}.)'
+        },
+        {
+            'Name': 'Swamp',
+            'Image': 'https://lh3.googleusercontent.com/d/1uozfnTiv8CsZ3Zbi4dyyZoRdUbEuVhn3',
+            'Text': '({T}: Add {B}.)'
+        },
+        {
+            'Name': 'Mountain',
+            'Image': 'https://lh3.googleusercontent.com/d/14FY_SJAY0H2RzR83UhJ4Jm7jEbv2rkg7',
+            'Text': '({T}: Add {R}.)'
+        },
+        {
+            'Name': 'Forest',
+            'Image': 'https://lh3.googleusercontent.com/d/1PcvE0Gd_e77EAeSREDGpjYnE81SRT73u',
+            'Text': '({T}: Add {G}.)'
+        },
+        {
+            'Name': 'Wastes',
+            'Image': 'https://lh3.googleusercontent.com/d/1EWnR5znfta8yMZpicTS4yATwUPnzIbjH',
+            'Text': '({T}: Add {C}.)'
+        }
+    ]
+
+    for b in basics:
+        database['data'].append({
+            'Name': b['Name'],
+            'Image': b['Image'],
+            'Creator': 'et al',
+            'Set': 'HC4',
+            'Constructed': 'Legal',
+            'Rulings': '',
+            'CMC': 0,
+            'Color(s)': '',
+            'Supertype(s)': ['Basic', None, None, None],
+            'Card Type(s)': ['Land', None, None, None],
+            'Subtype(s)': [b['Name'] if b['Name'] != 'Wastes' else None, None, None, None],
+            'power': [None, None, None, None],
+            'toughness': [None, None, None, None],
+            'Loyalty': [None, None, None, None],
+            'Text Box': [b['Text'], None, None, None]
+        })
+
 
 def generate_inline_database(database: dict) -> str:
     fields = [
