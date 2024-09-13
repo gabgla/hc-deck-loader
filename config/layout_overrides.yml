@@ -215,7 +215,7 @@
   type: normal
   sides: 1
   aspect: other
-- name: You see a number of goblins
+- name: You see a number of Goblins
   type: normal
   sides: 1
   aspect: other
@@ -247,7 +247,7 @@
   type: normal
   sides: 1
   aspect: other
-- name: Holy Fuck, There's A Hornet in My Car ?
+- name: Holy Fuck, There's A Hornet in My Car ?!
   type: normal
   sides: 1
   aspect: other

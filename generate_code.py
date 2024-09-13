@@ -1,3 +1,4 @@
+import sys
 import os
 import io
 import requests
@@ -13,20 +14,26 @@ CONFIG_PATH = './config/layout_overrides.yml'
 
 numbers = re.compile(r'(\d+)')
 
-def build():
+def main():
+    build(sys.argv[1])
+
+def build(destination_path):
     database = fetch_database(DB_URL)
     database_code_block = generate_inline_database(database)
     layout_config = generate_layout_config(CONFIG_PATH)
     script_parts = get_script_parts(SCAN_DIR)
 
-    return '\n'.join([database_code_block] + [layout_config] + script_parts)
+    script = '\n'.join([database_code_block] + [layout_config] + script_parts)
 
+    with open(destination_path, 'w') as new_script:
+        new_script.write(script)
+        new_script.close()
 
 def get_script_parts(scan_path) -> list[str]:
     files = []
     path = os.path.join(scan_path, '*.lua')
     for file_name in sorted(glob.glob(path), key=numerical_sort):
-        logging.warning(file_name)
+        print(file_name)
 
         file = io.open(file_name, 'r')
         files.append(file.read())
@@ -104,12 +111,13 @@ def generate_inline_database(database: dict) -> str:
             for i, t in enumerate(c['Card Type(s)']):
                 if t is None or t == "":
                     continue
-
+                
                 sides.append(list(f'["{f}"]="{lua_escape(c[f][i]) if f in c else ""}"' for f in side_fields))
 
         side_assignments = (f'{{{",".join(s)}}}' for s in sides)
         lua_assignments = list(f'["{f}"]="{lua_escape(c[f]) if f in c else ""}"' for f in fields) 
         lua_assignments.append(f'Sides={{{",".join(side_assignments)}}}')
+        logging.warning(lua_assignments)
 
         cards.append(f'{{{",".join(lua_assignments)}}}')
 
@@ -141,4 +149,5 @@ def numerical_sort(value):
     parts[1::2] = map(int, parts[1::2])
     return parts
 
-print(build())
+if __name__ == '__main__':
+    main()
