@@ -300,13 +300,18 @@ local function build_card_objects(cards)
 			title = card.Name,
 			cmc = card.CMC,
 			faces = {},
-			input = card.input
+			input = card.input,
+			proxy = false,
 		}
 
 		-- Process special layouts overrides
 		local layout = LAYOUTS[card.Name]
 		if layout ~= nil then
 			cardObject.layout = layout
+
+			if proxyNonStandardLayouts and cardObject.layout and cardObject.layout.aspect and cardObject.layout.aspect == "other" then
+				cardObject.proxy = true
+			end
 		end
 
 		local nameParts = {}
@@ -341,8 +346,8 @@ local function build_card_objects(cards)
 						oracleText = build_oracle_text(textFields)
 					}
 
-					if proxyNonStandardLayouts and cardObject.layout and cardObject.layout.aspect and cardObject.layout.aspect == "other" then
-						cardObject.faces[i].imageURI = get_proxy_face(card, card.Sides[i])
+					if cardObject.proxy then
+						cardObject.faces[i].proxyImageURI = get_proxy_face(card, card.Sides[i])
 					end
 				end
 			end

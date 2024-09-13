@@ -112,13 +112,6 @@
 - name: The Tomato Town Massacre // The Chug Jug
   type: other
   sides: 1
-  grid:
-    x: 3
-    y: 1
-  overrides:
-    0:
-      x_size: 2
-      rotation: 90
   aspect: other
 - name: Blood ghast // Crip Ghast
   type: mfc

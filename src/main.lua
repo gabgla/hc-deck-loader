@@ -42,7 +42,7 @@ if ENV ~= "tts" then
 end
 
 ------ CARD SPAWNING
-local function jsonForCardFace(face, position, flipped, count, index, card)
+local function jsonForCardFace(face, position, flipped, count, index, card, useProxy)
 	local rotation = self.getRotation()
 
 	local rotZ = rotation.z
@@ -101,10 +101,14 @@ local function jsonForCardFace(face, position, flipped, count, index, card)
 	-- Use layout overrides to position images correctly
 	if card.layout then
 		local layout = card.layout
-		if not (proxyNonStandardLayouts and layout.aspect and layout.aspect == "other") and layout.grid then
+
+		if card.proxy and useProxy then
+			json.CustomDeck["24400"].FaceURL = face.proxyImageURI
+		elseif layout.grid then
 			json.CustomDeck["24400"].NumWidth = layout.grid.x
 			json.CustomDeck["24400"].NumHeight = layout.grid.y
 		end
+
 	end
 
 	if enableTokenButtons and face.tokenData and face.tokenData[1] and face.tokenData[1].name and string.len(face.tokenData[1].name) > 0 then
@@ -117,7 +121,7 @@ end
 -- Spawns the given card [faces] at [position].
 -- Card will be face down if [flipped].
 -- Calls [onFullySpawned] when the object is spawned.
-local function spawnCard(card, position, flipped, onFullySpawned)
+local function spawnCard(card, position, flipped, useProxy, onFullySpawned)
 	local faces = card.faces
 	if not faces or not faces[1] then
 		faces = { {
@@ -154,12 +158,12 @@ local function spawnCard(card, position, flipped, onFullySpawned)
 		end
 	end
 
-	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces, 0, card)
+	local jsonFace1 = jsonForCardFace(faces[1], position, flipped, #faces, 0, card, useProxy)
 
 	if #faces > 1 then
 		jsonFace1.States = {}
 		for i = 2, (#(faces)) do
-			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces, i - 1, card)
+			local jsonFaceI = jsonForCardFace(faces[i], position, flipped, #faces, i - 1, card, useProxy)
 
 			jsonFace1.States[tostring(i)] = jsonFaceI
 		end
@@ -176,7 +180,7 @@ end
 -- Spawns a deck named [name] containing the given [cards] at [position].
 -- Deck will be face down if [flipped].
 -- Calls [onFullySpawned] when the object is spawned.
-local function spawnDeck(cards, name, position, flipped, onFullySpawned, onError)
+local function spawnDeck(cards, name, position, flipped, useProxy, onFullySpawned, onError)
 	local cardObjects = {}
 
 	local sem = 0
@@ -194,7 +198,7 @@ local function spawnDeck(cards, name, position, flipped, onFullySpawned, onError
 			end
 
 			incSem()
-			spawnCard(card, position, flipped, function(obj)
+			spawnCard(card, position, flipped, useProxy, function(obj)
 				table.insert(cardObjects, obj)
 				decSem()
 			end)
@@ -238,6 +242,7 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 	local maybeboard = {}
 	local commander = {}
 	local tokens = {}
+	local extras = {}
 
 	for _, card in ipairs(cardObjects) do
 		if card.input.maybeboard then
@@ -248,12 +253,15 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 			table.insert(commander, card)
 		else
 			table.insert(maindeck, card)
+			if card.proxy then
+				table.insert(extras, card)
+			end
 		end
 	end
 
 	printInfo("Spawning deck...")
 
-	local sem = 5
+	local sem = 6
 	local function decSem() sem = sem - 1 end
 
 	spawnDeck(maindeck, deckName, maindeckPosition, true,
@@ -266,7 +274,7 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 		end
 	)
 
-	spawnDeck(sideboard, deckName .. " - sideboard", sideboardPosition, true,
+	spawnDeck(sideboard, deckName .. " - sideboard", sideboardPosition, true, true,
 		function() -- onSuccess
 			decSem()
 		end,
@@ -276,7 +284,7 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 		end
 	)
 
-	spawnDeck(maybeboard, deckName .. " - maybeboard", maybeboardPosition, true,
+	spawnDeck(maybeboard, deckName .. " - maybeboard", maybeboardPosition, true, true,
 		function() -- onSuccess
 			decSem()
 		end,
@@ -286,7 +294,7 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 		end
 	)
 
-	spawnDeck(commander, deckName .. " - commanders", commanderPosition, false,
+	spawnDeck(commander, deckName .. " - commanders", commanderPosition, false, true,
 		function() -- onSuccess
 			decSem()
 		end,
@@ -296,7 +304,17 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 		end
 	)
 
-	spawnDeck(tokens, deckName .. " - tokens", tokensPosition, true,
+	spawnDeck(tokens, deckName .. " - tokens", tokensPosition, true, true,
+		function() -- onSuccess
+			decSem()
+		end,
+		function(e) -- onError
+			printErr(e)
+			decSem()
+		end
+	)
+
+	spawnDeck(extras, deckName .. " - extras", tokensPosition, true, false,
 		function() -- onSuccess
 			decSem()
 		end,

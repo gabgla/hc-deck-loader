@@ -3,7 +3,6 @@ import os
 import io
 import requests
 import json
-import logging
 import glob
 import re
 import yaml
@@ -117,7 +116,6 @@ def generate_inline_database(database: dict) -> str:
         side_assignments = (f'{{{",".join(s)}}}' for s in sides)
         lua_assignments = list(f'["{f}"]="{lua_escape(c[f]) if f in c else ""}"' for f in fields) 
         lua_assignments.append(f'Sides={{{",".join(side_assignments)}}}')
-        logging.warning(lua_assignments)
 
         cards.append(f'{{{",".join(lua_assignments)}}}')
 
