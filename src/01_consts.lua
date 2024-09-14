@@ -15,7 +15,7 @@ TOKENS_POSITION_OFFSET = { -0.7286, 0.2, -0.8257 }
 
 DEFAULT_CARDBACK = "https://i.imgur.com/ovmRjIz.jpeg"
 DEFAULT_LANGUAGE = "en"
-
+OG_CARDBACK = "https://gamepedia.cursecdn.com/mtgsalvation_gamepedia/f/f8/Magic_card_back.jpg?version=0ddc8d41c3b69c2c3c4bb5d72669ffd7"
 
 LANGUAGES = {
 	["en"] = "en"

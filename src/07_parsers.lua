@@ -98,7 +98,7 @@ local function format_text_fields(card, side)
 	local text = ""
 	local ft = ""
 	local cmc = ""
-	
+
 	-- Generate Cost
 
 	if side.Cost and #side.Cost > 0 then
@@ -348,6 +348,14 @@ local function build_card_objects(cards)
 
 					if cardObject.proxy then
 						cardObject.faces[i].proxyImageURI = get_proxy_face(card, card.Sides[i])
+					end
+
+					if improveAllCards then
+						cardObject.faces[i] = {
+							imageURI = "https://cards.scryfall.io/png/front/8/0/8059c52b-5d25-4052-b48a-e9e219a7a546.png",
+							name = "Colossal Dreadmaw\nCreature - Dinosaur\n6 CMC",
+							oracleText = "{4}{G}{G}\nCreature - Dinosaur\nTrample (This creature can deal excess combat damage to the player or planeswalker it’s attacking.)\n[b]6/6[/b]\n---\nIf you feel the ground quake, run. If you hear its bellow, flee. If you see its teeth, it’s too late.\n---"
+						}
 					end
 				end
 			end

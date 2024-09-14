@@ -523,6 +523,9 @@ end
 
 function getCardBack()
 	if not cardBackInput or string.len(cardBackInput) == 0 then
+		if useOGCardBacks then
+			return OG_CARDBACK
+		end
 		return DEFAULT_CARDBACK
 	else
 		return cardBackInput
@@ -543,32 +546,24 @@ function getLanguageCode()
 	end
 end
 
-function mtgdl__onLanguageInput(_, value, _)
-	languageInput = value
-end
-
-function mtgdl__onProxyNonStandardLayouts(_, value, _)
+function mtgdl__onProxyNonStandardLayoutsInput(_, value, _)
 	proxyNonStandardLayouts = stringToBool(value)
-end
-
-function mtgdl__onForceLanguageInput(_, value, _)
-	forceLanguage = stringToBool(value)
 end
 
 function mtgdl__onTokenButtonsInput(_, value, _)
 	enableTokenButtons = stringToBool(value)
 end
 
-function mtgdl__onBlowCacheInput(_, value, _)
-	blowCache = stringToBool(value)
-end
-
-function mtgdl__onPNGGraphicsInput(_, value, _)
-	pngGraphics = stringToBool(value)
-end
-
 function mtgdl__onFaceDownInput(_, value, _)
 	spawnEverythingFaceDown = stringToBool(value)
+end
+
+function mtgdl__onUseOGCardBacksInput(_, value, _)
+	useOGCardBacks = stringToBool(value)
+end
+
+function mtgdl__onImproveAllCardsInput(_, value, _)
+	improveAllCards = stringToBool(value)
 end
 
 ------ TTS CALLBACKS
