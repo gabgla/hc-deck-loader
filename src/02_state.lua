@@ -1,4 +1,6 @@
 ------ GLOBAL STATE
+RADIX_TREE = nil
+
 lock = false
 playerColor = nil
 deckSource = nil

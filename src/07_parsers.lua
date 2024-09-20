@@ -5,14 +5,40 @@ local function load_index()
 
 	INDEX = {}
 
+	local radixTree = new_radix_tree()
+
 	for key, value in pairs(DATABASE) do
 		INDEX[value.Name] = key
+		INDEX[string.lower(value.Name)] = key
+		radixTree.add(string.lower(value.Name))
 	end
+
+	RADIX_TREE = radixTree
 end
 
 local function get_card_by_name(name)
 	return DATABASE[INDEX[name]]
 end
+
+local function get_card_by_pattern(name)
+	local matches = RADIX_TREE.get_possible_matches({ startsWith = "", contains = name }, false)
+
+	local candidate = nil
+
+	if m then
+		local current_distance = math.huge
+		for path, _ in pairs(m) do
+			local distance = string_similarity(name, path)
+			if distance < current_distance then
+				current_distance = distance
+				candidate = path
+			end
+		end
+	end
+
+	return candidate
+end
+
 
 ------ In Hellscube there are no rules
 local function parseHCLine(line)
@@ -71,7 +97,17 @@ local function match_cards(cards)
 	for index, card in ipairs(cards) do
 		local found = get_card_by_name(card.name)
 
-		-- Fallback 1 - append (hc)
+		-- Fallback 1 - case insensitive
+		if not found then
+			found = get_card_by_name(string.lower(card.name))
+		end
+
+		-- Fallback 2 - use string search (partial match)
+		if not found then
+			found = get_card_by_pattern(string.lower(card.name))
+		end
+
+		-- Fallback 3 - append (hc)
 		if not found then
 			found = get_card_by_name(card.name .. " (hc)")
 		end
@@ -354,7 +390,8 @@ local function build_card_objects(cards)
 						cardObject.faces[i] = {
 							imageURI = "https://cards.scryfall.io/png/front/8/0/8059c52b-5d25-4052-b48a-e9e219a7a546.png",
 							name = "Colossal Dreadmaw\nCreature - Dinosaur\n6 CMC",
-							oracleText = "{4}{G}{G}\nCreature - Dinosaur\nTrample (This creature can deal excess combat damage to the player or planeswalker it’s attacking.)\n[b]6/6[/b]\n---\nIf you feel the ground quake, run. If you hear its bellow, flee. If you see its teeth, it’s too late.\n---"
+							oracleText = "{4}{G}{G}\nCreature - Dinosaur\nTrample (This creature can deal excess combat damage to the player or planeswalker it’s attacking.)\n[b]6/6[/b]\n---\nIf you feel the ground quake, run. If you hear its bellow, flee. If you see its teeth, it’s too late.\n---",
+							proxyImageURI = nil
 						}
 					end
 				end

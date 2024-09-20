@@ -1,5 +1,5 @@
 # HC6
-- name: Elden Ring Boss // Elden Ring Boss, Phase Two // Cool Boss Weapon Token # Update
+- name: Elden Ring Boss // Elden Ring Boss, Phase Two // Cool Boss Weapon Token
   type: mfc
   sides: 3
   grid:
@@ -14,7 +14,7 @@
   overrides:
     1:
       Name: Sticker Sheet
-- name: Ranger With the Big Iron on His Hip # Update
+- name: Ranger With the Big Iron on His Hip
   type: attached
   sides: 2
   grid:
@@ -34,7 +34,7 @@
   grid:
     x: 2
     y: 1
-- name: Hellscube Rebalancing Team # update
+- name: Hellscube Rebalancing Team
   type: attached
   sides: 2
   grid:
@@ -94,7 +94,7 @@
   grid:
     x: 2
     y: 1
-- name: B             o                o # update
+- name: B             o                o
   type: attached
   sides: 2
   grid:
@@ -134,7 +134,7 @@
   grid:
     x: 2
     y: 1
-- name: Termite Infestation # update
+- name: Termite Infestation
   type: attached
   sides: 2
   grid:
@@ -241,6 +241,10 @@
   sides: 1
   aspect: other
 - name: Holy Fuck, There's A Hornet in My Car ?!
+  type: normal
+  sides: 1
+  aspect: other
+- name: Scubers when you tell them not to Offspring or Populate
   type: normal
   sides: 1
   aspect: other

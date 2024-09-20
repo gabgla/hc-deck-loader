@@ -3,7 +3,7 @@
 ------------------
 
 if ENV == "dev" then
-	local list = "" -- Add cards here
+	local list = "colossal" -- Add cards here
 
 	print("Parsing list")
 	local cards = parse_card_list(list)
@@ -13,23 +13,14 @@ if ENV == "dev" then
 		print("Creating index")
 		load_index()
 
-		print("Creating tree")
-		local radixTree = new_radix_tree()
-		for _, value in pairs(DATABASE) do
-			radixTree.add(value.Name)
-		end
-
-		local m = radixTree.get_possible_matches({ startsWith = "", contains = "M" }, false)
-
-		if m then
-			for path, _ in pairs(m) do
-				print(path)
-			end
-		end
-
 		print("Building card data")
 
 		local matched = match_cards(cards)
+
+		for key, value in pairs(matched) do
+			print(value.Name)
+		end
+
 		local objects = build_card_objects(matched)
 	end)
 end
@@ -102,7 +93,7 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 	if card.layout then
 		local layout = card.layout
 
-		if card.proxy and useProxy then
+		if card.proxy and useProxy and face.proxyImageURI then
 			json.CustomDeck["24400"].FaceURL = face.proxyImageURI
 		elseif layout.grid then
 			json.CustomDeck["24400"].NumWidth = layout.grid.x
@@ -397,18 +388,6 @@ function importDeck()
 	return 1
 end
 
-function preloadDB()
-	if lock then
-		log("DB already loading.")
-	end
-
-	load_database(function()
-
-	end)
-
-	return 1
-end
-
 local function drawUI()
 	local _inputs = self.getInputs()
 	local deckURL = ""
@@ -422,32 +401,6 @@ local function drawUI()
 	end
 	self.clearInputs()
 	self.clearButtons()
-	-- self.createInput({
-	-- 	input_function = "onLoadDeckInput",
-	-- 	function_owner = self,
-	-- 	label          = "Enter deck URL, or load from Notebook.",
-	-- 	alignment      = 2,
-	-- 	position       = { x = 0, y = 0.1, z = 0.78 },
-	-- 	width          = 2000,
-	-- 	height         = 100,
-	-- 	font_size      = 60,
-	-- 	validation     = 1,
-	-- 	value          = deckURL,
-	-- })
-
-	-- self.createButton({
-	-- 	click_function = "onPreloadDBButton",
-	-- 	function_owner = self,
-	-- 	label          = "Preload DB",
-	-- 	position       = { -1, 0.1, 1.15 },
-	-- 	rotation       = { 0, 0, 0 },
-	-- 	width          = 850,
-	-- 	height         = 160,
-	-- 	font_size      = 80,
-	-- 	color          = { 0.5, 0.5, 0.5 },
-	-- 	font_color     = { r = 1, b = 1, g = 1 },
-	-- 	tooltip        = "Click to load deck preload the database",
-	-- })
 
 	self.createButton({
 		click_function = "onLoadDeckNotebookButton",
@@ -484,22 +437,6 @@ local function drawUI()
 	end
 end
 
-function getDeckInputValue()
-	for i, input in pairs(self.getInputs()) do
-		if input.label == "Enter deck URL, or load from Notebook." then
-			return trim(input.value)
-		end
-	end
-
-	return ""
-end
-
-function onLoadDeckInput(_, _, _) end
-
-function onLoadDeckURLButton(_, pc, _)
-	printToColor("Not implemented.", pc)
-end
-
 function onLoadDeckNotebookButton(_, pc, _)
 	if lock then
 		printToColor("Another deck is currently being imported. Please wait for that to finish.", pc)
@@ -510,10 +447,6 @@ function onLoadDeckNotebookButton(_, pc, _)
 	deckSource = DECK_SOURCE_NOTEBOOK
 
 	startLuaCoroutine(self, "importDeck")
-end
-
-function onPreloadDBButton(_, pc, _)
-	startLuaCoroutine(self, "preloadDB")
 end
 
 function onToggleAdvancedButton(_, _, _)
