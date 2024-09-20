@@ -3,7 +3,7 @@
 ------------------
 
 if ENV == "dev" then
-	local list = "colossal" -- Add cards here
+	local list = "dreadmaw" -- Add cards here
 
 	print("Parsing list")
 	local cards = parse_card_list(list)
