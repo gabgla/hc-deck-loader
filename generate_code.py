@@ -160,14 +160,21 @@ def generate_inline_database(database: dict) -> str:
 
         sides = []
         
-        # Small optimisation: Don't bother processing empty faces
+        def append_side(pos): sides.append(list(f'["{f}"]="{lua_escape(c[f][pos]) if f in c else ""}"' for f in side_fields))
 
+        # Small optimisation: Don't bother processing empty faces
         if 'Card Type(s)' in c:
             for i, t in enumerate(c['Card Type(s)']):
                 if t is None or t == "":
                     continue
-                
-                sides.append(list(f'["{f}"]="{lua_escape(c[f][i]) if f in c else ""}"' for f in side_fields))
+                append_side(i)
+            
+        # Fallback to Cost
+        if len(sides) == 0 and 'Cost' in c:
+            for i, t in enumerate(c['Cost']):
+                if t is None or t == "":
+                    continue
+                append_side(i)
 
         side_assignments = (f'{{{",".join(s)}}}' for s in sides)
         lua_assignments = list(f'["{f}"]="{lua_escape(c[f]) if f in c else ""}"' for f in fields) 

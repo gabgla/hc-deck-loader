@@ -102,14 +102,19 @@ local function match_cards(cards)
 			found = get_card_by_name(string.lower(card.name))
 		end
 
-		-- Fallback 2 - use string search (partial match)
+		-- Fallback 2 - append (hc)
+		if not found then
+			found = get_card_by_name(string.lower(card.name) .. " (hc)")
+		end
+
+		-- Fallback 3 - use string search (partial match)
 		if not found then
 			found = get_card_by_pattern(string.lower(card.name))
 		end
 
-		-- Fallback 3 - append (hc)
+		-- Fallback 4 - as before, but for individual words
 		if not found then
-			found = get_card_by_name(card.name .. " (hc)")
+			found = get_card_by_pattern(string.lower(card.name))
 		end
 
 		if not found then

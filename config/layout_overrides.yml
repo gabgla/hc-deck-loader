@@ -103,7 +103,7 @@
   overrides:
     1:
       Name: Boo Token
-- name: Shocker//Wheeler
+- name: Shocker // Wheeler
   type: mfc
   sides: 2
   grid:

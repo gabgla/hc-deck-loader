@@ -3,7 +3,7 @@
 ------------------
 
 if ENV == "dev" then
-	local list = "dreadmaw" -- Add cards here
+	local list = "bear" -- Add cards here
 
 	print("Parsing list")
 	local cards = parse_card_list(list)
@@ -19,6 +19,10 @@ if ENV == "dev" then
 
 		for key, value in pairs(matched) do
 			print(value.Name)
+			for k, v in pairs(value) do
+				print(k, #k)
+			end
+			print(value.Sides[1]["Text Box"])
 		end
 
 		local objects = build_card_objects(matched)
