@@ -1,13 +1,11 @@
 ------------------
 --- DEV
 ------------------
-
 if ENV == "dev" then
 	local list = "bear" -- Add cards here
 
 	print("Parsing list")
 	local cards = parse_card_list(list)
-	-- print("Loading DB")
 
 	load_database(function()
 		print("Creating index")
@@ -84,7 +82,7 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 
 	json.CustomDeck["24400"] = {
 		FaceURL = face.imageURI,
-		BackURL = getCardBack(),
+		BackURL = get_card_back(),
 		NumWidth = count,
 		NumHeight = 1,
 		BackIsHidden = true,
@@ -98,7 +96,14 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 		local layout = card.layout
 
 		if card.proxy and useProxy and face.proxyImageURI then
+			local scriptParts = {
+				"PC=\"" .. playerColor .. "\"",
+				"TEXT=\"" .. card.title .. "\"",
+				PROXY_SCRIPT
+			}
+
 			json.CustomDeck["24400"].FaceURL = face.proxyImageURI
+			json.LuaScript = table.concat(scriptParts, " ")
 		elseif layout.grid then
 			json.CustomDeck["24400"].NumWidth = layout.grid.x
 			json.CustomDeck["24400"].NumHeight = layout.grid.y
@@ -422,6 +427,8 @@ function importDeck()
 	return 1
 end
 
+-- UI
+
 local function drawUI()
 	local _inputs = self.getInputs()
 	local deckURL = ""
@@ -478,6 +485,7 @@ function onLoadDeckNotebookButton(_, pc, _)
 	end
 
 	playerColor = pc
+	print(playerColor)
 	deckSource = DECK_SOURCE_NOTEBOOK
 
 	startLuaCoroutine(self, "importDeck")
@@ -486,17 +494,6 @@ end
 function onToggleAdvancedButton(_, _, _)
 	advanced = not advanced
 	drawUI()
-end
-
-function getCardBack()
-	if not cardBackInput or string.len(cardBackInput) == 0 then
-		if useOGCardBacks then
-			return OG_CARDBACK
-		end
-		return DEFAULT_CARDBACK
-	else
-		return cardBackInput
-	end
 end
 
 function mtgdl__onCardBackInput(_, value, _)

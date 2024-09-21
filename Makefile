@@ -7,3 +7,7 @@ build:
 .PHONY: update-json
 update-json:
 	curl -o ./tools/Hellscube-Database.json ${DATABASE_URL}
+
+.PHONY: copy-to-tts-dir
+copy-to-tts-dir:
+	bash copy.sh

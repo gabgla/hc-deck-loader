@@ -23,8 +23,9 @@ def build(destination_path):
     database_code_block = generate_inline_database(database)
     layout_config = generate_layout_config(CONFIG_PATH)
     script_parts = get_script_parts(SCAN_DIR)
+    proxy_script = get_proxy_script(os.path.join(SCAN_DIR, 'proxies/proxy.lua'))
 
-    script = '\n'.join([database_code_block] + [layout_config] + script_parts)
+    script = '\n'.join([database_code_block] + [layout_config] + [proxy_script] + script_parts)
 
     with open(destination_path, 'w') as new_script:
         new_script.write(script)
@@ -41,6 +42,13 @@ def get_script_parts(scan_path) -> list[str]:
         file.close()
 
     return files
+
+def get_proxy_script(path) -> str:
+    with open(path, 'r') as file:
+       script = file.read()
+       file.close()
+
+    return f'PROXY_SCRIPT="{lua_code_escape(script)}"'
 
 def generate_layout_config(config_path):
     with open(config_path, 'r') as file:
@@ -200,6 +208,18 @@ def lua_escape(input) -> str:
         .replace('\t', '\\t') \
         # .replace('\\m', '\\\\m')
         # .replace('\\N', '\\\\N') \
+
+# This is dumb, improve later
+def lua_code_escape(input) -> str:
+    return input \
+        .strip() \
+        .replace('"', '\\"') \
+        .replace('\n', ' ') \
+        .replace('  ', ' ') \
+        .replace('  ', ' ') \
+        .replace('  ', ' ') \
+        .replace('  ', ' ') \
+        .replace('  ', ' ') \
 
 def process_edge_cases(c):
     if c['Name'] == 'Spork Elemental':

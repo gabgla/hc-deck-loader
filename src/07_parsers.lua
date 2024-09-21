@@ -39,6 +39,17 @@ local function get_card_by_pattern(name)
 	return get_card_by_name(candidate)
 end
 
+local function get_card_back()
+	if not cardBackInput or string.len(cardBackInput) == 0 then
+		if useOGCardBacks then
+			return OG_CARDBACK
+		end
+		return DEFAULT_CARDBACK
+	else
+		return cardBackInput
+	end
+end
+
 ------ In Hellscube there are no rules
 local function parseHCLine(line)
 	-- Parse out card count if present
