@@ -9,5 +9,6 @@ cardBackInput = ""
 enableTokenButtons = false
 spawnEverythingFaceDown = false
 proxyNonStandardLayouts = false
+noSplitCards = false
 useOGCardBacks = false
 improveAllCards = false

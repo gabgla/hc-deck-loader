@@ -136,16 +136,25 @@ local function spawnCard(card, position, flipped, useProxy, onFullySpawned)
 	end
 
 	-- Apply layout overrides
-	if card.layout then
-		while card.layout.sides < #faces do
-			local previous_face = faces[#faces - 1]
-			local current_face = faces[#faces]
+	local maxSides = #faces
+	if card.layout and card.layout.sides then
+		maxSides = card.layout.sides
+	end
 
-			previous_face.oracleText = previous_face.oracleText .. "\n//\n" .. current_face.oracleText
+	if noSplitCards then
+		maxSides = 1
+	end
 
-			table.remove(faces, #faces)
-		end
+	while maxSides < #faces do
+		local previous_face = faces[#faces - 1]
+		local current_face = faces[#faces]
 
+		previous_face.oracleText = previous_face.oracleText .. "\n//\n" .. current_face.oracleText
+
+		table.remove(faces, #faces)
+	end
+
+	if card.layout and not noSplitCards then
 		for i = #faces, card.layout.sides - 1 do
 			local new_face = {
 				name = "",
@@ -520,6 +529,10 @@ end
 
 function mtgdl__onFaceDownInput(_, value, _)
 	spawnEverythingFaceDown = stringToBool(value)
+end
+
+function mtgdl__onNoSplitInput(_, value, _)
+	noSplitCards = stringToBool(value)
 end
 
 function mtgdl__onUseOGCardBacksInput(_, value, _)

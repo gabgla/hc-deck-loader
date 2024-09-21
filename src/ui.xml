@@ -17,7 +17,11 @@
     </Panel>
 
     <Panel position="180 -40 0">
-        <Toggle position="-70 0 0" onValueChanged="mtgdl__onFaceDownInput" fontSize="10">Spawn everything face-down</Toggle>
+        <Toggle position="-70 0 0" onValueChanged="mtgdl__onNoSplitInput" fontSize="10">Don't separate split/dfc cards</Toggle>
+    </Panel>
+    
+    <Panel position="360 -40 0">
+        <Toggle position="-70 0 0" onValueChanged="mtgdl__onImproveAllCardsInput" fontSize="10">Improve all cards</Toggle>
     </Panel>
 
     <Panel position="0 -80 0">
@@ -25,6 +29,6 @@
     </Panel>
 
     <Panel position="180 -80 0">
-        <Toggle position="-70 0 0" onValueChanged="mtgdl__onImproveAllCardsInput" fontSize="10">Improve all cards</Toggle>
+        <Toggle position="-70 0 0" onValueChanged="mtgdl__onFaceDownInput" fontSize="10">Spawn everything face-down</Toggle>
     </Panel>
 </Panel>
