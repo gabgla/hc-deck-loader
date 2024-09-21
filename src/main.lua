@@ -103,7 +103,6 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 			json.CustomDeck["24400"].NumWidth = layout.grid.x
 			json.CustomDeck["24400"].NumHeight = layout.grid.y
 		end
-
 	end
 
 	if enableTokenButtons and face.tokenData and face.tokenData[1] and face.tokenData[1].name and string.len(face.tokenData[1].name) > 0 then
@@ -134,7 +133,7 @@ local function spawnCard(card, position, flipped, useProxy, onFullySpawned)
 	-- Apply layout overrides
 	if card.layout then
 		while card.layout.sides < #faces do
-			local previous_face = faces[#faces-1]
+			local previous_face = faces[#faces - 1]
 			local current_face = faces[#faces]
 
 			previous_face.oracleText = previous_face.oracleText .. "\n//\n" .. current_face.oracleText
@@ -256,68 +255,99 @@ local function loadDeck(cardObjects, deckName, onComplete, onError)
 
 	printInfo("Spawning deck...")
 
-	local sem = 6
+	local sem = 0
 	local function decSem() sem = sem - 1 end
 
-	spawnDeck(maindeck, deckName, maindeckPosition, true,
-		function() -- onSuccess
-			decSem()
-		end,
-		function(e) -- onError
-			printErr(e)
-			decSem()
-		end
-	)
+	local tasks = {}
 
-	spawnDeck(sideboard, deckName .. " - sideboard", sideboardPosition, true, true,
-		function() -- onSuccess
-			decSem()
-		end,
-		function(e) -- onError
-			printErr(e)
-			decSem()
-		end
-	)
+	if #maindeck > 0 then
+		table.insert(tasks, function()
+			spawnDeck(maindeck, deckName, maindeckPosition, true,
+				function() -- onSuccess
+					decSem()
+				end,
+				function(e) -- onError
+					printErr(e)
+					decSem()
+				end
+			)
+		end)
+	end
 
-	spawnDeck(maybeboard, deckName .. " - maybeboard", maybeboardPosition, true, true,
-		function() -- onSuccess
-			decSem()
-		end,
-		function(e) -- onError
-			printErr(e)
-			decSem()
-		end
-	)
+	if #sideboard > 0 then
+		table.insert(tasks, function()
+			spawnDeck(sideboard, deckName .. " - sideboard", sideboardPosition, true, true,
+				function() -- onSuccess
+					decSem()
+				end,
+				function(e) -- onError
+					printErr(e)
+					decSem()
+				end
+			)
+		end)
+	end
 
-	spawnDeck(commander, deckName .. " - commanders", commanderPosition, false, true,
-		function() -- onSuccess
-			decSem()
-		end,
-		function(e) -- onError
-			printErr(e)
-			decSem()
-		end
-	)
+	if #maybeboard > 0 then
+		table.insert(tasks, function()
+			spawnDeck(maybeboard, deckName .. " - maybeboard", maybeboardPosition, true, true,
+				function() -- onSuccess
+					decSem()
+				end,
+				function(e) -- onError
+					printErr(e)
+					decSem()
+				end
+			)
+		end)
+	end
 
-	spawnDeck(tokens, deckName .. " - tokens", tokensPosition, true, true,
-		function() -- onSuccess
-			decSem()
-		end,
-		function(e) -- onError
-			printErr(e)
-			decSem()
-		end
-	)
+	if #commander > 0 then
+		table.insert(tasks, function()
+			spawnDeck(commander, deckName .. " - commanders", commanderPosition, false, true,
+				function() -- onSuccess
+					decSem()
+				end,
+				function(e) -- onError
+					printErr(e)
+					decSem()
+				end
+			)
+		end)
+	end
 
-	spawnDeck(extras, deckName .. " - extras", tokensPosition, true, false,
-		function() -- onSuccess
-			decSem()
-		end,
-		function(e) -- onError
-			printErr(e)
-			decSem()
-		end
-	)
+	if #tokens > 0 then
+		table.insert(tasks, function()
+			spawnDeck(tokens, deckName .. " - tokens", tokensPosition, true, true,
+				function() -- onSuccess
+					decSem()
+				end,
+				function(e) -- onError
+					printErr(e)
+					decSem()
+				end
+			)
+		end)
+	end
+
+	if #extras > 0 then
+		table.insert(tasks, function ()
+			spawnDeck(extras, deckName .. " - extras", tokensPosition, true, false,
+				function() -- onSuccess
+					decSem()
+				end,
+				function(e) -- onError
+					printErr(e)
+					decSem()
+				end
+			)
+		end)
+	end
+
+	sem = #tasks
+	for _, f in ipairs(tasks) do
+		f()
+	end
 
 	Wait.condition(
 		function() onComplete() end,

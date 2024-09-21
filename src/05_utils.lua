@@ -70,10 +70,10 @@ local function string_similarity(a, b)
 				cost = 1
 			end
 
-			d[i][j] = math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + cost)
+			d[i][j] = math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost)
 
-			if i > 1 and j > 1 and a:sub(i, i) == b:sub(j-1, j-1) and a:sub(i-1, i-1) == b:sub(j, j) then
-				d[i][j] = math.min(d[i][j], d[i-2][j-2] + 1)
+			if i > 1 and j > 1 and a:sub(i, i) == b:sub(j - 1, j - 1) and a:sub(i - 1, i - 1) == b:sub(j, j) then
+				d[i][j] = math.min(d[i][j], d[i - 2][j - 2] + 1)
 			end
 		end
 	end
