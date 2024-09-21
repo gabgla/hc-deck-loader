@@ -23,6 +23,31 @@ local function drawUI()
             }
         }
     })
+
+    self.createButton({
+		click_function = "onSpawnOriginalButton",
+		function_owner = self,
+		label          = "Spawn Original",
+		position       = { 0, 0.5, 1.35 },
+		rotation       = { 0, 0, 0 },
+		width          = 850,
+		height         = 160,
+		font_size      = 80,
+		color          = { 0.5, 0.5, 0.5 },
+		font_color     = { r = 1, b = 1, g = 1 },
+		tooltip        = "Click to spawn the original card",
+	})
+end
+
+function onSpawnOriginalButton(_, pc, _)
+    local cardObject = JSON.decode(OG)
+    local currentPos = self.positionToWorld({ 0, 0, 0 })
+
+    cardObject.Transform.posX = currentPos.x
+    cardObject.Transform.posY = currentPos.y + 100
+    cardObject.Transform.posZ = currentPos.z + 3.5
+    cardObject.Transform.rotZ = math.fmod(cardObject.Transform.rotZ + 180, 360)
+	spawnObjectData({ data = cardObject })
 end
 
 function onLoad()

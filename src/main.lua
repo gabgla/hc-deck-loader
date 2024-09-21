@@ -96,9 +96,12 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 		local layout = card.layout
 
 		if card.proxy and useProxy and face.proxyImageURI then
+			local ogFace = jsonencode(jsonForCardFace(face, position, flipped, count, index, card, false))
+
 			local scriptParts = {
 				"PC=\"" .. playerColor .. "\"",
 				"TEXT=\"" .. card.title .. "\"",
+				"OG=\"" .. ogFace:gsub("\\", "\\\\"):gsub("\"", "\\\"") .. "\"",
 				PROXY_SCRIPT
 			}
 
