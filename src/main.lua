@@ -134,6 +134,7 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 	if not json.LuaScript then
 		local scriptParts = {
 			"PC=\"" .. playerColor .. "\"",
+			"TEXT=\"" .. card.title .. "\"",
 			CARD_SCRIPT
 		}
 

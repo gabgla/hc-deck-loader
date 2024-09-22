@@ -23,10 +23,8 @@ def build(destination_path):
     database_code_block = generate_inline_database(database)
     layout_config = generate_layout_config(CONFIG_PATH)
     script_parts = get_script_parts(SCAN_DIR)
-    card_script = get_card_script(os.path.join(SCAN_DIR, 'cards/generic.lua'))
     proxy_script = get_proxy_script(os.path.join(SCAN_DIR, 'cards/proxy.lua'))
-
-    
+    card_script = generate_card_script(os.path.join(SCAN_DIR, 'cards/generic.lua'), proxy_script)
 
     script = '\n'.join([database_code_block] + [layout_config] + [card_script] + [proxy_script] + script_parts)
 
@@ -46,12 +44,12 @@ def get_script_parts(scan_path) -> list[str]:
 
     return files
 
-def get_card_script(path) -> str:
+def generate_card_script(path, proxy_script) -> str:
     with open(path, 'r') as file:
        script = file.read()
        file.close()
 
-    return f'CARD_SCRIPT="{lua_code_escape(script)}"'
+    return f'CARD_SCRIPT="{lua_escape(proxy_script)} {lua_code_escape(script)}"'
 
 def get_proxy_script(path) -> str:
     with open(path, 'r') as file:
@@ -223,13 +221,14 @@ def lua_escape(input) -> str:
 def lua_code_escape(input) -> str:
     return input \
         .strip() \
+        .replace('\\', '\\\\') \
         .replace('"', '\\"') \
         .replace('\n', ' ') \
-        .replace('  ', ' ') \
-        .replace('  ', ' ') \
-        .replace('  ', ' ') \
-        .replace('  ', ' ') \
-        .replace('  ', ' ') \
+        # .replace('  ', ' ') \
+        # .replace('  ', ' ') \
+        # .replace('  ', ' ') \
+        # .replace('  ', ' ') \
+        # .replace('  ', ' ') \
 
 # Fix this on the DB
 def process_edge_cases(c):
