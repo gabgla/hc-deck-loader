@@ -93,7 +93,7 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 		CardID = 2440000 + index,
 		SidewaysCard = false,
 		CustomDeck = {},
-		LuaScript = "",
+		LuaScript = nil,
 		LuaScriptState = "",
 	}
 
@@ -128,6 +128,16 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 			json.CustomDeck["24400"].NumWidth = layout.grid.x
 			json.CustomDeck["24400"].NumHeight = layout.grid.y
 		end
+
+	end
+
+	if not json.LuaScript then
+		local scriptParts = {
+			"PC=\"" .. playerColor .. "\"",
+			CARD_SCRIPT
+		}
+
+		json.LuaScript = table.concat(scriptParts, " ")
 	end
 
 	if enableTokenButtons and face.tokenData and face.tokenData[1] and face.tokenData[1].name and string.len(face.tokenData[1].name) > 0 then

@@ -23,9 +23,12 @@ def build(destination_path):
     database_code_block = generate_inline_database(database)
     layout_config = generate_layout_config(CONFIG_PATH)
     script_parts = get_script_parts(SCAN_DIR)
-    proxy_script = get_proxy_script(os.path.join(SCAN_DIR, 'proxies/proxy.lua'))
+    card_script = get_card_script(os.path.join(SCAN_DIR, 'cards/generic.lua'))
+    proxy_script = get_proxy_script(os.path.join(SCAN_DIR, 'cards/proxy.lua'))
 
-    script = '\n'.join([database_code_block] + [layout_config] + [proxy_script] + script_parts)
+    
+
+    script = '\n'.join([database_code_block] + [layout_config] + [card_script] + [proxy_script] + script_parts)
 
     with open(destination_path, 'w') as new_script:
         new_script.write(script)
@@ -42,6 +45,13 @@ def get_script_parts(scan_path) -> list[str]:
         file.close()
 
     return files
+
+def get_card_script(path) -> str:
+    with open(path, 'r') as file:
+       script = file.read()
+       file.close()
+
+    return f'CARD_SCRIPT="{lua_code_escape(script)}"'
 
 def get_proxy_script(path) -> str:
     with open(path, 'r') as file:
