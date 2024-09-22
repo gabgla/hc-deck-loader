@@ -3,7 +3,6 @@ IDEAL_HEIGHT = 4.04
 TOLERANCE = 0.1
 
 DRAWN_UI = false
-PROXY_COLORLESS = "https://i.imgur.com/QJpbImB.png"
 
 local function drawUI()
     if DRAWN_UI then
@@ -34,12 +33,12 @@ function onProxyButton(_, pc, _)
     local data = self.getData()
 
     for _, deck in pairs(data.CustomDeck) do
-        deck.FaceURL = PROXY_COLORLESS
+        deck.FaceURL = PROXY_IMAGE_URL
 		deck.NumWidth = 1
     end
 
     local scriptParts = {
-        "PC=\"" .. PC .. "\"",
+        "PC=\"" .. pc .. "\"",
         "TEXT=\"" .. TEXT .. "\"",
         "OG=\"" .. self.getJSON(false):gsub("\\", "\\\\"):gsub("\"", "\\\"") .. "\"",
         PROXY_SCRIPT

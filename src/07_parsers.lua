@@ -404,10 +404,7 @@ local function build_card_objects(cards)
 						oracleText = build_oracle_text(textFields)
 					}
 
-					if cardObject.proxy then
-						cardObject.faces[i].proxyImageURI = get_proxy_face(card, card.Sides[i])
-					end
-
+					cardObject.faces[i].proxyImageURI = get_proxy_face(card, card.Sides[i])
 					if improveAllCards then
 						cardObject.faces[i] = {
 							imageURI = "https://cards.scryfall.io/png/front/8/0/8059c52b-5d25-4052-b48a-e9e219a7a546.png",

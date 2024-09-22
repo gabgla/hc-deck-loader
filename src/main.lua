@@ -128,13 +128,13 @@ local function jsonForCardFace(face, position, flipped, count, index, card, useP
 			json.CustomDeck["24400"].NumWidth = layout.grid.x
 			json.CustomDeck["24400"].NumHeight = layout.grid.y
 		end
-
 	end
 
 	if not json.LuaScript then
 		local scriptParts = {
 			"PC=\"" .. playerColor .. "\"",
 			"TEXT=\"" .. card.title .. "\"",
+			"PROXY_IMAGE_URL=\"" .. face.proxyImageURI .. "\"",
 			CARD_SCRIPT
 		}
 

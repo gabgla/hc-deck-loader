@@ -42,10 +42,13 @@ end
 function onSpawnOriginalButton(_, pc, _)
     local cardObject = JSON.decode(OG)
     local currentPos = self.positionToWorld({ 0, 0, 0 })
+    local rotation = self.getRotation()
 
     cardObject.Transform.posX = currentPos.x
     cardObject.Transform.posY = currentPos.y + 100
     cardObject.Transform.posZ = currentPos.z + 3.5
+    cardObject.Transform.rotX = rotation.x
+    cardObject.Transform.rotY = rotation.y
     cardObject.Transform.rotZ = math.fmod(cardObject.Transform.rotZ + 180, 360)
 	spawnObjectData({ data = cardObject })
 end
