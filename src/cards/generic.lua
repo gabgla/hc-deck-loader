@@ -1,5 +1,5 @@
 IDEAL_WIDTH = 2.19
-IDEAL_HEIGHT = 4.04
+IDEAL_HEIGHT = 3.06
 TOLERANCE = 0.1
 
 DRAWN_UI = false
@@ -9,6 +9,7 @@ local function drawUI()
         return
     end
     local bounds = self.getBoundsNormalized()
+
     if (bounds.size.x > IDEAL_WIDTH + TOLERANCE or bounds.size.x < IDEAL_WIDTH - TOLERANCE)
     or (bounds.size.z > IDEAL_HEIGHT + TOLERANCE or bounds.size.z < IDEAL_HEIGHT - TOLERANCE) then
         self.createButton({

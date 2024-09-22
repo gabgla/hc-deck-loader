@@ -38,7 +38,6 @@ local function get_card_by_pattern(name)
 		local current_distance = math.huge
 		for path, _ in pairs(matches) do
 			local distance = string_similarity(name, path)
-			print(path, distance)
 			if distance < current_distance then
 				current_distance = distance
 				candidate = path
