@@ -2,7 +2,7 @@
 --- DEV
 ------------------
 if ENV == "dev" then
-	local list = "bear" -- Add cards here
+	local list = "tomato massacre" -- Add cards here
 
 	print("Parsing list")
 	local cards = parse_card_list(list)
@@ -17,13 +17,30 @@ if ENV == "dev" then
 
 		for key, value in pairs(matched) do
 			print(value.Name)
-			for k, v in pairs(value) do
-				print(k, #k)
-			end
-			print(value.Sides[1]["Text Box"])
 		end
 
 		local objects = build_card_objects(matched)
+
+		local results = RADIX_TREE.get_possible_matches(
+			{
+				{
+					expr = "contains",
+					value = "tomato"
+				},
+				{
+					expr = "contains",
+					value = "massacre"
+				}
+			},
+			false
+		)
+
+		print(results)
+		if results then
+			for index, value in pairs(results) do
+				print(index)
+			end
+		end
 	end)
 end
 

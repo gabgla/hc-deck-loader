@@ -139,40 +139,45 @@ local function new_radix_tree()
 		-- fills j.radix_elements with all hits that were found
 		local match_parts = function(tree_instance, parts)
 			j.radix_elements = {}
-			if parts['equals'] then
-				j.return_tree = {}
-				root_lookup(tree_instance, parts['equals'])
-				if j.return_tree[parts['equals']] == true then
-					j.radix_elements[parts['equals']] = true
-				end
-			else
-				local temp_tree = tree_instance
-				if parts['startsWith'] then
+
+			local temp_tree = tree_instance
+			for _, op in ipairs(parts) do
+				print(op.expr, op.value)
+				if op.expr == 'equals' then
 					j.return_tree = {}
-					root_lookup(temp_tree, parts['startsWith'])
-					temp_tree = j.return_tree
-				end
-				if parts['contains'] then
-					j.return_tree = {}
-					leaf_lookup(temp_tree, parts['contains'], 0)
-					temp_tree = j.return_tree
-				end
-				if parts['endsWith'] then
-					j.return_tree = {}
-					leaf_lookup(temp_tree, parts['endsWith'], 0)
-					for k, t in pairs(j.return_tree) do
-						for _, v in pairs(t) do
-							if v ~= true then
-								j.return_tree[k] = nil
-								break
+					root_lookup(temp_tree, op.value)
+					if j.return_tree[op.value] == true then
+						j.radix_elements[op.value] = true
+					end
+					break
+				else
+					if op.expr == 'startsWith' then
+						j.return_tree = {}
+						root_lookup(temp_tree, op.value)
+						temp_tree = j.return_tree
+					end
+					if op.expr == 'contains' then
+						j.return_tree = {}
+						leaf_lookup(temp_tree, op.value, 0)
+						temp_tree = j.return_tree
+					end
+					if op.expr == 'endsWith' then
+						j.return_tree = {}
+						leaf_lookup(temp_tree, op.value, 0)
+						for k, t in pairs(j.return_tree) do
+							for _, v in pairs(t) do
+								if v ~= true then
+									j.return_tree[k] = nil
+									break
+								end
 							end
 						end
+						temp_tree = j.return_tree
 					end
-					temp_tree = j.return_tree
 				end
-				if temp_tree then
-					radix_traverse(temp_tree)
-				end
+			end
+			if temp_tree then
+				radix_traverse(temp_tree)
 			end
 		end
 
@@ -183,15 +188,17 @@ local function new_radix_tree()
 		local get_possible_matches = function(path, is_case_insensitive)
 			local level = 'impossible'
 			local radix_expressions = {}
+			local expressions_to_evaluate = {}
 
 			if not is_case_insensitive then
-				for name, value in pairs(path) do
-					if name == 'equals' or name == 'startsWith' or name == 'endsWith' or name == 'contains' then
-						if radix_expressions[name] then
-							level = 'impossible'
-							break
-						end
-						radix_expressions[name] = value
+				for _, op in ipairs(path) do
+					if op.expr == 'equals' or op.expr == 'startsWith' or op.expr == 'endsWith' or op.expr == 'contains' then
+						-- if radix_expressions[op.expr] then
+						-- 	level = 'impossible'
+						-- 	break
+						-- end
+						radix_expressions[op.expr] = op.value
+						table.insert(expressions_to_evaluate, op)
 						if level == 'partial_pending' then
 							level = 'partial'
 						elseif level ~= 'partial' then
@@ -211,7 +218,7 @@ local function new_radix_tree()
 			end
 
 			if level ~= 'impossible' then
-				match_parts(j.radix_tree, radix_expressions)
+				match_parts(j.radix_tree, expressions_to_evaluate)
 				return j.radix_elements, level
 			else
 				return nil, level

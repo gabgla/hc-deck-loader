@@ -221,6 +221,7 @@ def lua_code_escape(input) -> str:
         .replace('  ', ' ') \
         .replace('  ', ' ') \
 
+# Fix this on the DB
 def process_edge_cases(c):
     if c['Name'] == 'Spork Elemental':
         c['Text Box'][0] = 'Trample, haste\nAt the beginning of the next end step, sacrifice a Food or a creature. This only happens once.'

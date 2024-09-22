@@ -21,7 +21,16 @@ local function get_card_by_name(name)
 end
 
 local function get_card_by_pattern(name)
-	local matches = RADIX_TREE.get_possible_matches({ startsWith = "", contains = name }, false)
+	local terms = {}
+
+	for part in name:gmatch("([^%s]+)") do
+		table.insert(terms, {
+			expr = "contains",
+			value = part
+		})
+	end
+
+	local matches = RADIX_TREE.get_possible_matches(terms, false)
 
 	local candidate = nil
 
@@ -29,6 +38,7 @@ local function get_card_by_pattern(name)
 		local current_distance = math.huge
 		for path, _ in pairs(matches) do
 			local distance = string_similarity(name, path)
+			print(path, distance)
 			if distance < current_distance then
 				current_distance = distance
 				candidate = path
@@ -118,11 +128,6 @@ local function match_cards(cards)
 		end
 
 		-- Fallback 3 - use string search (partial match)
-		if not found then
-			found = get_card_by_pattern(string.lower(card.name))
-		end
-
-		-- Fallback 4 - as before, but for individual words
 		if not found then
 			found = get_card_by_pattern(string.lower(card.name))
 		end
@@ -341,6 +346,8 @@ local function get_proxy_face(card, side)
 			return PROXY_GREEN
 		end
 	end
+
+	return PROXY_COLORLESS
 end
 
 local function build_card_objects(cards)
