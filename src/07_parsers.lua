@@ -411,7 +411,7 @@ local function build_card_objects(cards)
 							name = "Colossal Dreadmaw\nCreature - Dinosaur\n6 CMC",
 							oracleText =
 							"{4}{G}{G}\nCreature - Dinosaur\nTrample (This creature can deal excess combat damage to the player or planeswalker it’s attacking.)\n[b]6/6[/b]\n---\nIf you feel the ground quake, run. If you hear its bellow, flee. If you see its teeth, it’s too late.\n---",
-							proxyImageURI = nil
+							proxyImageURI = PROXY_GREEN
 						}
 					end
 				end
