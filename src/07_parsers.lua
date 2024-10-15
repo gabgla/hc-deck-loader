@@ -344,6 +344,8 @@ local function get_proxy_face(card, side)
 		if colors[1] == "Green" then
 			return PROXY_GREEN
 		end
+
+		return PROXY_COLORLESS
 	end
 
 	return PROXY_COLORLESS

@@ -142,7 +142,6 @@ local function new_radix_tree()
 
 			local temp_tree = tree_instance
 			for _, op in ipairs(parts) do
-				print(op.expr, op.value)
 				if op.expr == 'equals' then
 					j.return_tree = {}
 					root_lookup(temp_tree, op.value)

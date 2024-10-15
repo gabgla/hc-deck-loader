@@ -190,7 +190,8 @@ local function spawnCard(card, position, flipped, useProxy, onFullySpawned)
 			local new_face = {
 				name = "",
 				oracleText = "",
-				imageURI = faces[1].imageURI
+				imageURI = faces[1].imageURI,
+				proxyImageURI = faces[1].proxyImageURI
 			}
 
 			table.insert(faces, new_face)
