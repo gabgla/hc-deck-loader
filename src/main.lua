@@ -172,7 +172,7 @@ local function spawnCard(card, position, flipped, useProxy, onFullySpawned)
 		maxSides = card.layout.sides
 	end
 
-	if noSplitCards then
+	if not splitCards then
 		maxSides = 1
 	end
 
@@ -185,7 +185,7 @@ local function spawnCard(card, position, flipped, useProxy, onFullySpawned)
 		table.remove(faces, #faces)
 	end
 
-	if card.layout and not noSplitCards then
+	if card.layout and splitCards then
 		for i = #faces, card.layout.sides - 1 do
 			local new_face = {
 				name = "",
@@ -563,8 +563,8 @@ function mtgdl__onFaceDownInput(_, value, _)
 	spawnEverythingFaceDown = stringToBool(value)
 end
 
-function mtgdl__onNoSplitInput(_, value, _)
-	noSplitCards = stringToBool(value)
+function mtgdl__onSplitInput(_, value, _)
+	splitCards = stringToBool(value)
 end
 
 function mtgdl__onUseOGCardBacksInput(_, value, _)

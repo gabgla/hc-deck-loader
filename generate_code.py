@@ -1,6 +1,8 @@
 import sys
+import operator
 import os
 import io
+import itertools
 import requests
 import json
 import glob
@@ -10,6 +12,7 @@ import yaml
 DB_URL = 'https://raw.githubusercontent.com/bones-bones/hellfall/main/src/data/Hellscube-Database.json'
 SCAN_DIR = './src'
 CONFIG_PATH = './config/layout_overrides.yml'
+DB_CHUNKS=4
 
 numbers = re.compile(r'(\d+)')
 
@@ -142,6 +145,16 @@ def add_basics(database):
             'Text Box': [b['Text'], None, None, None]
         })
 
+def generate_database_chunks(database: dict) -> dict:
+    s = sorted(database['data'], key = lambda x: (x['Set'], x['Name']))
+
+    def chunks(lst, n):
+        for i in range(0, len(lst), n):
+            yield lst[i:i + n]
+    
+
+
+    pass
 
 def generate_inline_database(database: dict) -> str:
     fields = [

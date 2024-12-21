@@ -91,17 +91,6 @@ local function new_radix_tree()
 		local add_to_tree = function(word)
 			local t = j.radix_tree
 
-			-- for char in word:gfind(".") do
-			-- 	if word == "Smart Fella // Fart Smella" then
-			-- 		print(char)
-			-- 	end
-			-- 	if t[char] == true or t[char] == nil then
-			-- 		t[char] = {}
-			-- 	end
-			-- 	t = t[char]
-			-- end
-			-- t[word] = true
-
 			for i = 1, #word do
 				local char = word:sub(i, i)
 				if t[char] == true or t[char] == nil then
@@ -115,14 +104,6 @@ local function new_radix_tree()
 		-- removes an element from the tree
 		local remove_from_tree = function(word)
 			local t = j.radix_tree
-
-			-- for char in word:gfind(".") do
-			-- 	if t[char] == true then
-			-- 		return
-			-- 	end
-			-- 	t = t[char]
-			-- end
-			-- t[word] = nil
 
 			for i = 1, #word do
 				local char = word:sub(i, i)
